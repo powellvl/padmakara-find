@@ -1,0 +1,16 @@
+<p style="color: green"><%= notice %></p>
+
+<% content_for :title, "Translations" %>
+
+<h1>Translations Of <%= @text.title_tibetan %></h1>
+
+<div id="translations">
+  <% @translations.each do |translation| %>
+    <%= render translation %>
+    <p>
+      <%= link_to "Show this translation", [@text, translation] %>
+    </p>
+  <% end %>
+</div>
+
+<%= link_to "New translation", new_text_translation_path(@text) %>

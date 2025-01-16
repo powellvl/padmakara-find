@@ -1,0 +1,22 @@
+<%= form_with(model: [text, translation]) do |form| %>
+  <% if translation.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(translation.errors.count, "error") %> prohibited this translation from being saved:</h2>
+
+      <ul>
+        <% translation.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :language, style: "display: block" %>
+    <%= form.text_field :language %>
+  </div>
+
+  <div>
+    <%= form.submit %>
+  </div>
+<% end %>
