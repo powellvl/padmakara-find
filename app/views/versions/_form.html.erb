@@ -1,0 +1,32 @@
+<%= form_with(model: [@text, @translation, version]) do |form| %>
+  <% if version.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(version.errors.count, "error") %> prohibited this version from being saved:</h2>
+
+      <ul>
+        <% version.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :name, style: "display: block" %>
+    <%= form.text_field :name %>
+  </div>
+
+  <div>
+    <%= form.label :status, style: "display: block" %>
+    <div class="status-options">
+      <% Version.statuses.keys.each do |status| %>
+        <%= form.radio_button :status, status %>
+        <%= form.label "status_#{status}".to_sym, status.humanize %>
+      <% end %>
+    </div>
+  </div>
+
+  <div>
+    <%= form.submit %>
+  </div>
+<% end %>

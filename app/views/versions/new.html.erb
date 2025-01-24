@@ -1,0 +1,11 @@
+<% content_for :title, "New version" %>
+
+<h1>New version for <%= @translation.language %> translation</h1>
+
+<%= render "form", version: @version %>
+
+<br>
+
+<div>
+  <%= link_to "Back to versions", [@text, @translation, :versions] %>
+</div>

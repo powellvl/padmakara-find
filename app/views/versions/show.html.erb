@@ -1,0 +1,10 @@
+<p style="color: green"><%= notice %></p>
+
+<%= render @version %>
+
+<div>
+  <%= link_to "Edit this version", edit_text_translation_version_path(@text, @translation, @version) %> |
+  <%= link_to "Back to versions", text_translation_versions_path(@text, @translation) %>
+
+  <%= button_to "Delete this version", text_translation_version_path(@text, @translation, @version), method: :delete %>
+</div>

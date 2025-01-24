@@ -31,7 +31,7 @@ class TranslationsController < ApplicationController
   # PATCH/PUT /translations/1 or /translations/1.json
   def update
     if @translation.update(translation_params)
-      redirect_to @translation, notice: "Translation was successfully updated."
+      redirect_to [ @text, @translation ], notice: "Translation was successfully updated."
     else
       render :edit, status: :unprocessable_entity
     end
@@ -40,7 +40,7 @@ class TranslationsController < ApplicationController
   # DELETE /translations/1 or /translations/1.json
   def destroy
     @translation.destroy!
-    redirect_to translations_path, status: :see_other, notice: "Translation was successfully destroyed."
+    redirect_to [ @text, :translations ], status: :see_other, notice: "Translation was successfully destroyed."
   end
 
   private

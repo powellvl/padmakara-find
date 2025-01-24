@@ -10,7 +10,57 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_01_15_112747) do
+ActiveRecord::Schema[8.0].define(version: 2025_01_24_121657) do
+  create_table "deities", force: :cascade do |t|
+    t.string "name_tibetan"
+    t.string "name_sanskrit"
+    t.string "name_english"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "deities_texts", force: :cascade do |t|
+    t.integer "deity_id", null: false
+    t.integer "text_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["deity_id", "text_id"], name: "index_deities_texts_on_deity_id_and_text_id", unique: true
+    t.index ["deity_id"], name: "index_deities_texts_on_deity_id"
+    t.index ["text_id"], name: "index_deities_texts_on_text_id"
+  end
+
+  create_table "schools", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "schools_texts", force: :cascade do |t|
+    t.integer "school_id", null: false
+    t.integer "text_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["school_id", "text_id"], name: "index_schools_texts_on_school_id_and_text_id", unique: true
+    t.index ["school_id"], name: "index_schools_texts_on_school_id"
+    t.index ["text_id"], name: "index_schools_texts_on_text_id"
+  end
+
+  create_table "tags", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "tags_texts", force: :cascade do |t|
+    t.integer "tag_id", null: false
+    t.integer "text_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["tag_id", "text_id"], name: "index_tags_texts_on_tag_id_and_text_id", unique: true
+    t.index ["tag_id"], name: "index_tags_texts_on_tag_id"
+    t.index ["text_id"], name: "index_tags_texts_on_text_id"
+  end
+
   create_table "texts", force: :cascade do |t|
     t.string "title_tibetan"
     t.string "title_phonetics"
@@ -27,5 +77,22 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_15_112747) do
     t.index ["text_id"], name: "index_translations_on_text_id"
   end
 
+  create_table "versions", force: :cascade do |t|
+    t.integer "translation_id", null: false
+    t.string "name"
+    t.integer "status"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name", "translation_id"], name: "index_versions_on_name_and_translation_id", unique: true
+    t.index ["translation_id"], name: "index_versions_on_translation_id"
+  end
+
+  add_foreign_key "deities_texts", "deities", on_delete: :cascade
+  add_foreign_key "deities_texts", "texts", on_delete: :cascade
+  add_foreign_key "schools_texts", "schools", on_delete: :cascade
+  add_foreign_key "schools_texts", "texts", on_delete: :cascade
+  add_foreign_key "tags_texts", "tags", on_delete: :cascade
+  add_foreign_key "tags_texts", "texts", on_delete: :cascade
   add_foreign_key "translations", "texts"
+  add_foreign_key "versions", "translations"
 end

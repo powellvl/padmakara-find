@@ -20,7 +20,7 @@ class TextsController < ApplicationController
     @text = Text.new(text_params)
 
     if @text.save
-      redirect_to @text, notice: "Text was successfully created."
+      redirect_to texts_path, notice: "Text was successfully created."
     else
       render :new, status: :unprocessable_entity
     end
@@ -29,7 +29,7 @@ class TextsController < ApplicationController
   # PATCH/PUT /texts/1 or /texts/1.json
   def update
       if @text.update(text_params)
-        redirect_to @text, notice: "Text was successfully updated."
+        redirect_to texts_path, notice: "Text was successfully updated."
       else
         render :edit, status: :unprocessable_entity
       end
@@ -50,6 +50,6 @@ class TextsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def text_params
-      params.expect(text: [ :title_tibetan, :title_phonetics, :notes ])
+      params.require(:text).permit(:title, :description, deity_ids: [], school_ids: [], tag_ids: [])
     end
 end
