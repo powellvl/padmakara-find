@@ -1,0 +1,30 @@
+{
+  "name": "Rails 8 Dev Container",
+  "build": {
+    "dockerfile": "../Dockerfile",
+    "context": "..",
+    "args": {
+      "RAILS_ENV": "development"
+    }
+  },
+  "runArgs": ["--init"],
+  "forwardPorts": [3000],
+  "postCreateCommand": "bundle install",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind",
+  "workspaceFolder": "/workspace",
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "editor.formatOnSave": true
+      },
+      "extensions": [
+        "rebornix.Ruby",
+        "castwide.solargraph",
+        "ms-azuretools.vscode-docker"
+      ]
+    }
+  },
+  "containerEnv": {
+    "RAILS_ENV": "development"
+  }
+}
