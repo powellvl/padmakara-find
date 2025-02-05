@@ -58,6 +58,8 @@ class VersionsController < ApplicationController
     end
 
     def version_params
-      params.expect(version: [ :name, :status ])
+      params.expect({
+        version: [ :name, :status, files: [] ]
+      })
     end
 end

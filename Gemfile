@@ -63,3 +63,5 @@ group :test do
 end
 
 gem "tailwindcss-rails", "~> 3.2"
+
+gem "image_processing", ">= 1.2"

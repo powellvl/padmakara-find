@@ -8,7 +8,7 @@
 <div class="container mx-auto px-4 sm:px-6 lg:px-8">
   <h1 class="text-3xl font-bold p-10 text-center"> Versions Of <%= @translation.language %> Translation</h1>
 
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+  <div class="flex flex-col gap-6 mb-8">
     <% @versions.each do |version| %>
       <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-200">
         <%= render version %>
