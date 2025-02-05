@@ -1,0 +1,64 @@
+<% max_size ||= 10 %>
+<% max_files ||= 10 %>
+<% file_input_name ||= :file %>
+<% data ||= {} %>
+
+<div
+  class="my-dropzone"
+  data-controller="dropzone"
+  data-dropzone-max-file-size="<%= max_size %>"
+  data-dropzone-max-files="<%= max_files %>">
+
+  <%= form.file_field(
+        file_input_name,
+        direct_upload: true,
+        class: 'hidden',
+        multiple: true,
+        disabled: true,
+        data: data.merge({target: 'dropzone.input'})
+      ) %>
+
+  <div class="dz-message needsclick drop-container">
+    <div class="message-container">
+      <div>
+        <a>Click to upload</a> or drag and drop your files here.
+      </div>
+      <div>Maximum file size <%= max_size %> MB.</div>
+    </div>
+  </div>
+
+  <div id="dz-previews-container" data-target="dropzone.previewsContainer" class="previews-container">
+    <% attachments.each do |attachment| %>
+      <div class="dz-preview dz-file-preview preview-file">
+        <%= form.hidden_field(file_input_name, value: attachment.signed_id, multiple: true) %>
+
+        <div class="dz-progress"><div class="dz-upload" data-dz-uploadprogress style="width: 100%;"></div></div>
+
+        <i class="fa-light fa-file file-icon"></i>
+        <div class="dz-details file-details">
+          <div class="dz-filename"><span><%= attachment.filename %></span></div>
+          <div class="dz-size"><%= number_to_human_size(attachment.byte_size) %></div>
+        </div>
+
+        <i class="fa-light fa-times file-remove-icon" data-action="click->dropzone#removeExisting"></i>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="hidden">
+    <div data-target="dropzone.previewTemplate">
+      <div class="dz-preview dz-file-preview preview-file">
+        <div class="dz-progress"><div class="dz-upload" data-dz-uploadprogress style="width: 0;"></div></div>
+
+        <i class="fa-light fa-file file-icon"></i>
+        <div class="dz-details file-details">
+          <div class="dz-filename"><span data-dz-name></span></div>
+          <div class="dz-size" data-dz-size></div>
+        </div>
+        <div class="dz-error-message"><span data-dz-errormessage></span></div>
+
+        <i class="fa-light fa-times file-remove-icon" data-dz-remove></i>
+      </div>
+    </div>
+  </div>
+</div>

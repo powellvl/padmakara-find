@@ -4,7 +4,11 @@ Rails.application.routes.draw do
   resources :deities
   resources :texts do
     resources :translations do
-      resources :versions
+      resources :versions do
+        member do
+          get :edit_files
+        end
+      end
     end
   end
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html

@@ -1,7 +1,7 @@
 class VersionsController < ApplicationController
   before_action :set_text
   before_action :set_translation
-  before_action :set_version, only: %i[ show edit update destroy ]
+  before_action :set_version, only: %i[ show edit edit_files update destroy ]
 
   def index
     @versions = @translation.versions
@@ -12,6 +12,9 @@ class VersionsController < ApplicationController
   end
 
   def edit
+  end
+
+  def edit_files
   end
 
   def show
