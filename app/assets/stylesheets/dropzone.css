@@ -1,27 +1,25 @@
 .my-dropzone {
   .drop-container {
-    border: 1px #999 solid;
-    border-radius: 8px;
-    padding: 20px;
     cursor: pointer;
   }
 
   .message-container {
-    margin: 2em 0;
     text-align: center;
     display: flex;
     flex-flow: column;
     align-items: center;
     justify-content: center;
+    padding: 10%;
     color: #999;
   }
 
   .previews-container {
-    margin-top: 30px;
+    margin-top: 1rem;
   }
 
   .preview-file {
     position: relative;
+    overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -63,19 +61,9 @@
       z-index: 2;
     }
 
-    .dz-progress {
-      z-index: 1;
-      position: absolute;
-      width: 100%;
-      height: 100%;
-
-      .dz-upload {
-        background-color: #fff;
-        height: 100%;
-      }
-    }
-
     .dz-error-message {
+      margin-left: 0.5rem;
+      font-size: 0.75rem;
       color: red;
     }
   }

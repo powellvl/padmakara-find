@@ -7,57 +7,96 @@
   class="my-dropzone"
   data-controller="dropzone"
   data-dropzone-max-file-size="<%= max_size %>"
-  data-dropzone-max-files="<%= max_files %>">
-
+  data-dropzone-max-files="<%= max_files %>"
+  data-dropzone-url="<%= rails_direct_uploads_path %>"
+>
   <%= form.file_field(
         file_input_name,
         direct_upload: true,
         class: 'hidden',
         multiple: true,
-        disabled: true,
-        data: data.merge({target: 'dropzone.input'})
+        data: {
+          target: 'dropzone.input'
+        }
       ) %>
 
-  <div class="dz-message needsclick drop-container">
-    <div class="message-container">
-      <div>
-        <a>Click to upload</a> or drag and drop your files here.
+  <div class="dz-message needsclick bg-gray-50 rounded-lg p-4 hover:bg-gray-100 transition-all duration-200">
+    <div class="message-container text-center">
+      <div class="text-sm">
+        <a class="text-blue-600 font-medium">Click to upload</a> or drag and drop your files here.
       </div>
-      <div>Maximum file size <%= max_size %> MB.</div>
     </div>
   </div>
 
-  <div id="dz-previews-container" data-target="dropzone.previewsContainer" class="previews-container">
+  <div id="dz-previews-container" data-target="dropzone.previewsContainer" class="grid gap-4 mt-4">
     <% attachments.each do |attachment| %>
-      <div class="dz-preview dz-file-preview preview-file">
-        <%= form.hidden_field(file_input_name, value: attachment.signed_id, multiple: true) %>
+      <div class="dz-preview dz-file-preview dz-processing dz-success dz-complete flex width-full items-center gap-1">
+        <div class="group flex-1 flex items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-all duration-200">
+          <%= form.hidden_field(file_input_name, value: attachment.signed_id, multiple: true) %>
 
-        <div class="dz-progress"><div class="dz-upload" data-dz-uploadprogress style="width: 100%;"></div></div>
+          <div class="flex-shrink-0">
+            <svg class="w-8 h-8 text-gray-400 group-hover:text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+          </div>
+          
+          <div class="flex-1 ml-4">
+            <div class="dz-filename text-sm font-medium text-gray-900 group-hover:text-blue-600">
+              <span><%= attachment.filename %></span>
+            </div>
+            <div class="dz-size text-xs text-gray-500">
+              <%= number_to_human_size(attachment.byte_size) %>
+            </div>
+          </div>
 
-        <i class="fa-light fa-file file-icon"></i>
-        <div class="dz-details file-details">
-          <div class="dz-filename"><span><%= attachment.filename %></span></div>
-          <div class="dz-size"><%= number_to_human_size(attachment.byte_size) %></div>
+          <button type="button" class="flex-shrink-0" data-action="click->dropzone#removeExisting">
+            <svg class="w-5 h-5 text-gray-400 hover:text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
         </div>
-
-        <i class="fa-light fa-times file-remove-icon" data-action="click->dropzone#removeExisting"></i>
       </div>
     <% end %>
   </div>
 
   <div class="hidden">
     <div data-target="dropzone.previewTemplate">
-      <div class="dz-preview dz-file-preview preview-file">
-        <div class="dz-progress"><div class="dz-upload" data-dz-uploadprogress style="width: 0;"></div></div>
+      <div class="dz-preview dz-file-preview flex width-full items-center gap-1" data-reference-id="">
+        <div class="group flex-1 flex items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-all duration-200">
+          <div class="flex-shrink-0">
+            <svg class="w-8 h-8 text-gray-400 group-hover:text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+          </div>
 
-        <i class="fa-light fa-file file-icon"></i>
-        <div class="dz-details file-details">
-          <div class="dz-filename"><span data-dz-name></span></div>
-          <div class="dz-size" data-dz-size></div>
+          <div class="flex-1 ml-4">
+            <div class="dz-filename text-sm font-medium text-gray-900 group-hover:text-blue-600">
+              <span data-dz-name></span>
+            </div>
+            <div class="dz-size text-xs text-gray-500">
+              <span data-dz-size></span>
+            </div>
+          </div>
+
+          <div class="dz-error-message text-xs text-red-500">
+            <span data-dz-errormessage></span>
+          </div>
+
+          <div class="dz-success-mark hidden">
+            <span>✔</span>
+          </div>
+          <div class="dz-error-mark hidden">
+            <span>✘</span>
+          </div>
+
+          <input type="hidden" name="<%= file_input_name %>" data-target="dropzone.hiddenInput">
+          
+          <button type="button" class="flex-shrink-0" data-dz-remove>
+            <svg class="w-5 h-5 text-gray-400 hover:text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
         </div>
-        <div class="dz-error-message"><span data-dz-errormessage></span></div>
-
-        <i class="fa-light fa-times file-remove-icon" data-dz-remove></i>
       </div>
     </div>
   </div>

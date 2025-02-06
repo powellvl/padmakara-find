@@ -8,19 +8,15 @@ export default class extends Controller {
   static targets = ["input", "previewsContainer", "previewTemplate"];
 
   connect() {
-    if (document.documentElement.hasAttribute("data-turbo-preview")) {
-      return;
-    }
-
     this.dropZone = createDropZone(this);
     this.bindEvents();
   }
 
   bindEvents() {
     this.dropZone.on("addedfile", (file) => {
-      if (file.accepted) {
-        createDirectUploadController(this, file).start();
-      }
+      setTimeout(() => {
+        file.accepted && createDirectUploadController(this, file).start();
+      }, 200);
     });
 
     this.dropZone.on("removedfile", (file) => {
@@ -155,12 +151,9 @@ function createDropZone(controller) {
     maxFilesize: controller.maxFileSize,
     acceptedFiles: controller.acceptedFiles,
     addRemoveLinks: false,
-    autoQueue: true,
-    autoProcessQueue: false,
+    autoQueue: false,
     createImageThumbnails: false,
     previewsContainer: controller.previewsContainer,
     previewTemplate: controller.previewTemplate,
-    clickable: true,
-    dictDefaultMessage: "Déposez vos fichiers ici",
   });
 }
