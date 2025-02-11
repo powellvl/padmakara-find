@@ -15,9 +15,13 @@
       <% end %>
 
       <div>
-        <%= form.label :language, class: "block text-sm font-medium text-gray-700 mb-2" %>
-        <%= form.text_field :language, 
-            class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" %>
+        <%= form.label :language_id, "Language", class: "block text-sm font-medium text-gray-700 mb-2" %>
+        <%= form.collection_select :language_id, 
+            @available_languages,
+            :id,
+            :name,
+            { prompt: "Select a language" },
+            { class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" } %>
       </div>
 
       <div class="pt-4">

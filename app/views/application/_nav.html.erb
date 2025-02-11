@@ -12,6 +12,7 @@
               { name: "Tags", path: tags_path },
               { name: "Schools", path: schools_path },
               { name: "Deities", path: deities_path },
+              { name: "Languages", path: languages_path }
             ].each do |menu_item| %>
               <%= link_to menu_item[:name], menu_item[:path], class:"#{current_page?(menu_item[:path]) ? "bg-gray-900 text-white" : "text-gray-900"} rounded-md px-3 py-2 text-sm font-medium hover:bg-gray-700 hover:text-white" %>
             <% end %>

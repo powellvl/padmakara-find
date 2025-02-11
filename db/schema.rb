@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_02_06_143748) do
+ActiveRecord::Schema[8.0].define(version: 2025_02_11_093418) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -55,6 +55,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_06_143748) do
     t.index ["deity_id", "text_id"], name: "index_deities_texts_on_deity_id_and_text_id", unique: true
     t.index ["deity_id"], name: "index_deities_texts_on_deity_id"
     t.index ["text_id"], name: "index_deities_texts_on_text_id"
+  end
+
+  create_table "languages", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "schools", force: :cascade do |t|
@@ -108,9 +114,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_06_143748) do
 
   create_table "translations", force: :cascade do |t|
     t.integer "text_id", null: false
-    t.string "language"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "language_id"
+    t.index ["language_id"], name: "index_translations_on_language_id"
+    t.index ["text_id", "language_id"], name: "index_translations_on_text_id_and_language_id", unique: true
     t.index ["text_id"], name: "index_translations_on_text_id"
   end
 
@@ -141,6 +149,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_06_143748) do
   add_foreign_key "sessions", "users"
   add_foreign_key "tags_texts", "tags", on_delete: :cascade
   add_foreign_key "tags_texts", "texts", on_delete: :cascade
+  add_foreign_key "translations", "languages"
   add_foreign_key "translations", "texts"
   add_foreign_key "versions", "translations"
 end

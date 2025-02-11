@@ -10,12 +10,15 @@ class TranslationsController < ApplicationController
 
   # GET /translations/new
   def new
-    @translation = @text.translations.new
+    @text = Text.find(params[:text_id])
+    @translation = @text.translations.build
+    @available_languages = Language.all
     add_breadcrumb("New Translation", new_text_translation_path(@text))
   end
 
   # GET /translations/1/edit
   def edit
+    @available_languages = Language.all
     add_breadcrumb("Edit", edit_text_translation_path(@text, @translation))
   end
 
