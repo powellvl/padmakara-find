@@ -1,6 +1,6 @@
 class TranslationsController < ApplicationController
-  before_action :set_text
-  before_action :set_translation, only: %i[ edit update destroy ]
+  before_action :set_text_and_breadcrumb
+  before_action :set_translation_and_breadcrumb, only: %i[ edit update destroy ]
 
   # GET /texts/:id/translations or /translations.json
   def index
@@ -11,10 +11,12 @@ class TranslationsController < ApplicationController
   # GET /translations/new
   def new
     @translation = @text.translations.new
+    add_breadcrumb("New Translation", new_text_translation_path(@text))
   end
 
   # GET /translations/1/edit
   def edit
+    add_breadcrumb("Edit", edit_text_translation_path(@text, @translation))
   end
 
   # POST /translations or /translations.json
@@ -44,13 +46,15 @@ class TranslationsController < ApplicationController
   end
 
   private
-    def set_text
+    def set_text_and_breadcrumb
       @text = Text.find(params.expect(:text_id))
+      add_breadcrumb(@text.title_tibetan, text_translations_path(@text))
     end
 
     # Use callbacks to share common setup or constraints between actions.
-    def set_translation
+    def set_translation_and_breadcrumb
       @translation = Translation.find(params.expect(:id))
+      add_breadcrumb(@translation.language, text_translation_path(@text, @translation))
     end
 
     # Only allow a list of trusted parameters through.

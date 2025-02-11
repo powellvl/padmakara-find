@@ -1,7 +1,7 @@
 class VersionsController < ApplicationController
-  before_action :set_text
-  before_action :set_translation
-  before_action :set_version, only: %i[ show edit edit_files update destroy ]
+  before_action :set_text_and_breadcrumb
+  before_action :set_translation_and_breadcrumb
+  before_action :set_version_and_breadcrumb, only: %i[ show edit edit_files update destroy ]
 
   def index
     @versions = @translation.versions
@@ -9,12 +9,15 @@ class VersionsController < ApplicationController
 
   def new
     @version = @translation.versions.new
+    add_breadcrumb("New Version", new_text_translation_version_path(@text, @translation))
   end
 
   def edit
+    add_breadcrumb("Edit", edit_text_translation_version_path(@text, @translation, @version))
   end
 
   def edit_files
+    add_breadcrumb("Edit Files", edit_files_text_translation_version_path(@text, @translation, @version))
   end
 
   def show
@@ -48,16 +51,19 @@ class VersionsController < ApplicationController
   end
 
   private
-    def set_text
+    def set_text_and_breadcrumb
       @text = Text.find(params[:text_id])
+      add_breadcrumb(@text.title_tibetan, text_translations_path(@text))
     end
 
-    def set_translation
+    def set_translation_and_breadcrumb
       @translation = @text.translations.find(params[:translation_id])
+      add_breadcrumb(@translation.language, text_translation_versions_path(@text, @translation))
     end
 
-    def set_version
+    def set_version_and_breadcrumb
       @version = @translation.versions.find(params[:id])
+      add_breadcrumb(@version.name, text_translation_version_path(@text, @translation, @version))
     end
 
     def version_params
