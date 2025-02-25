@@ -9,10 +9,12 @@ class TextsController < ApplicationController
   # GET /texts/new
   def new
     @text = Text.new
+    add_breadcrumb("New Text", new_text_path)
   end
 
   # GET /texts/1/edit
   def edit
+    add_breadcrumb("Edit", edit_text_path(@text))
   end
 
   # POST /texts or /texts.json
@@ -45,7 +47,8 @@ class TextsController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_text
-      @text = Text.find(params.expect(:id))
+      @text = Text.find(params[:id])
+      add_breadcrumb(@text.title_tibetan, text_path(@text))
     end
 
     # Only allow a list of trusted parameters through.

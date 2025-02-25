@@ -1,22 +1,26 @@
 class TagsController < ApplicationController
-  before_action :set_tag, only: %i[ show edit update destroy ]
+  before_action :set_tag_and_breadcrumb, only: %i[ show edit update destroy ]
 
   # GET /tags
   def index
     @tags = Tag.all
+    add_breadcrumb("Tags", tags_path)
   end
 
   # GET /tags/1
   def show
+    add_breadcrumb(@tag.name, tag_path(@tag))
   end
 
   # GET /tags/new
   def new
     @tag = Tag.new
+    add_breadcrumb("New Tag", new_tag_path)
   end
 
   # GET /tags/1/edit
   def edit
+    add_breadcrumb("Edit", edit_tag_path(@tag))
   end
 
   # POST /tags
@@ -49,6 +53,7 @@ class TagsController < ApplicationController
     # Use callbacks to share common setup or constraints between actions.
     def set_tag
       @tag = Tag.find(params.expect(:id))
+      add_breadcrumb(@tag.name, tag_path(@tag))
     end
 
     # Only allow a list of trusted parameters through.

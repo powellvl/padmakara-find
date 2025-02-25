@@ -4,19 +4,27 @@ class LanguagesController < ApplicationController
   # GET /languages
   def index
     @languages = Language.all
+    add_breadcrumb "Languages", languages_path
   end
 
   # GET /languages/1
   def show
+    add_breadcrumb "Languages", languages_path
+    add_breadcrumb @language.name, language_path(@language)
   end
 
   # GET /languages/new
   def new
     @language = Language.new
+    add_breadcrumb "Languages", languages_path
+    add_breadcrumb "New Language", new_language_path
   end
 
   # GET /languages/1/edit
   def edit
+    add_breadcrumb "Languages", languages_path
+    add_breadcrumb @language.name, language_path(@language)
+    add_breadcrumb "Edit", edit_language_path(@language)
   end
 
   # POST /languages

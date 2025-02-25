@@ -1,22 +1,26 @@
 class SchoolsController < ApplicationController
-  before_action :set_school, only: %i[ show edit update destroy ]
+  before_action :set_school_and_breadcrumb, only: %i[ show edit update destroy ]
 
   # GET /schools
   def index
     @schools = School.all
+    add_breadcrumb("Schools", schools_path)
   end
 
   # GET /schools/1
   def show
+    add_breadcrumb(@school.name, school_path(@school))
   end
 
   # GET /schools/new
   def new
     @school = School.new
+    add_breadcrumb("New School", new_school_path)
   end
 
   # GET /schools/1/edit
   def edit
+    add_breadcrumb("Edit", edit_school_path(@school))
   end
 
   # POST /schools
@@ -49,6 +53,7 @@ class SchoolsController < ApplicationController
     # Use callbacks to share common setup or constraints between actions.
     def set_school
       @school = School.find(params.expect(:id))
+      add_breadcrumb(@school.name, school_path(@school))
     end
 
     # Only allow a list of trusted parameters through.

@@ -4,19 +4,27 @@ class DeitiesController < ApplicationController
   # GET /deities
   def index
     @deities = Deity.all
+    add_breadcrumb "Deities", deities_path
   end
 
   # GET /deities/1
   def show
+    add_breadcrumb "Deities", deities_path
+    add_breadcrumb @deity.name_english, deity_path(@deity)
   end
 
   # GET /deities/new
   def new
     @deity = Deity.new
+    add_breadcrumb "Deities", deities_path
+    add_breadcrumb "New Deity", new_deity_path
   end
 
   # GET /deities/1/edit
   def edit
+    add_breadcrumb "Deities", deities_path
+    add_breadcrumb @deity.name_english, deity_path(@deity)
+    add_breadcrumb "Edit", edit_deity_path(@deity)
   end
 
   # POST /deities
