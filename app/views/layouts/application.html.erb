@@ -33,8 +33,16 @@
       </header>
 
       <main>
+
         <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-          <%= render "application/breadcrumbs"%>
+          <% if Current.user %>
+            <%= render "application/breadcrumbs" %>
+          <% end %>
+
+          <% if ["translations", "versions"].include?(params[:controller]) %>
+            <%= render "application/text_info" %>
+          <% end %>
+
           <%= yield %>
         </div>
       </main>

@@ -1,9 +1,10 @@
 <% content_for :title, "Editing text" %>
 
-<h1 class="text-3xl font-bold underline">Editing text</h1>
+<h1>Editing text</h1>
 
-<%= render "form", text: @text %>
-<br>
+<div>
+  <%= render 'form', text: @text %>
+</div>
 
 <div>
   <%= link_to "Show this text", @text %> |

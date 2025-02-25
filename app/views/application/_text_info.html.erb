@@ -1,0 +1,25 @@
+
+      <p>Text Title</p>
+      <h2><%= @text.title_tibetan %></h2>
+      
+      <% if @text.deities.any? %>
+        <div>
+          <h5>Deities:</h5>
+          <ul>
+            <% @text.deities.each do |deity| %>
+              <li><%= deity.name_tibetan %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <% if @text.schools.any? %>
+        <div>
+          <h5>Schools:</h5>
+          <ul>
+            <% @text.schools.each do |school| %>
+              <li><%= school.name %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>

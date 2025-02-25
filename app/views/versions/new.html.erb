@@ -1,6 +1,6 @@
 <% content_for :title, "New version" %>
 
-<h1>New version for <%= @translation.language %> translation</h1>
+<h1>New version for <%= @translation.language.name %> translation</h1>
 
 <%= render "form", version: @version, show_general_fields: true, show_file_fields: true %>
 
