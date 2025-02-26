@@ -1,13 +1,29 @@
+<div class="p-6 bg-white rounded-lg shadow-lg mt-5">
+  <div class="flex gap-8">
+    <%# Book Cover SVG %>
+    <div class="flex-shrink-0 w-[210mm] h-[297mm] max-w-[200px] max-h-[283px] relative">
+      <svg class="w-full h-full" viewBox="0 0 210 297" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M30 30 H180 V267 H30 V30" class="fill-white stroke-gray-200"/>
+        <text x="105" y="148" text-anchor="middle" class="fill-gray-400 font-serif" font-size="14">
+          Cover Preview
+        </text>
+      </svg>
+    </div>
+    
+    <%# Text Information %>
+    <div class="flex-grow space-y-6">
+      <div>
+        <h2 class="text-2xl font-bold text-gray-800 mb-2"><%= @text.title_tibetan %></h2>
+      </div>
 
-      <p>Text Title</p>
-      <h2><%= @text.title_tibetan %></h2>
-      
       <% if @text.deities.any? %>
         <div>
-          <h5>Deities:</h5>
-          <ul>
+          <h5 class="text-sm font-semibold text-gray-600 uppercase tracking-wider mb-2">Deities</h5>
+          <ul class="grid grid-cols-2 gap-2">
             <% @text.deities.each do |deity| %>
-              <li><%= deity.name_tibetan %></li>
+              <li class="text-gray-700 bg-gray-50 rounded-md px-3 py-2">
+                <%= deity.name_tibetan %>
+              </li>
             <% end %>
           </ul>
         </div>
@@ -15,11 +31,29 @@
 
       <% if @text.schools.any? %>
         <div>
-          <h5>Schools:</h5>
-          <ul>
+          <h5 class="text-sm font-semibold text-gray-600 uppercase tracking-wider mb-2">Schools</h5>
+          <ul class="grid grid-cols-2 gap-2">
             <% @text.schools.each do |school| %>
-              <li><%= school.name %></li>
+              <li class="text-gray-700 bg-gray-50 rounded-md px-3 py-2">
+                <%= school.name %>
+              </li>
             <% end %>
           </ul>
         </div>
       <% end %>
+
+      <% if @text.tags.any? %>
+        <div>
+          <h5 class="text-sm font-semibold text-gray-600 uppercase tracking-wider mb-2">Tags</h5>
+          <ul class="grid grid-cols-2 gap-2">
+            <% @text.tags.each do |tag| %>
+              <li class="text-gray-700 bg-gray-50 rounded-md px-3 py-2">
+                <%= tag.name %>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
