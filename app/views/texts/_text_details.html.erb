@@ -1,0 +1,30 @@
+<div class="text-details mt-4 mb-4">
+  <div class="card">
+    <div class="card-body">
+      <h2 class="card-title"><%= @text.title %></h2>
+      <p class="card-text"><%= @text.description %></p>
+      
+      <% if @text.deities.any? %>
+        <div class="deities mt-3">
+          <h5>Deities:</h5>
+          <ul class="list-unstyled">
+            <% @text.deities.each do |deity| %>
+              <li><%= deity.name %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <% if @text.schools.any? %>
+        <div class="schools mt-3">
+          <h5>Schools:</h5>
+          <ul class="list-unstyled">
+            <% @text.schools.each do |school| %>
+              <li><%= school.name %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

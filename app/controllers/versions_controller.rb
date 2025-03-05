@@ -35,11 +35,23 @@ class VersionsController < ApplicationController
   end
 
   def update
-    if @version.update(version_params)
-      redirect_to [ @text, @translation, :versions ],
-                  notice: "Version was successfully updated."
-    else
-      render :edit, status: :unprocessable_entity
+    @version = Version.find(params[:id])
+
+    Version.transaction do
+      if params[:primary_file_id].present?
+        # Réinitialiser tous les fichiers comme non-prioritaires
+        @version.files_attachments.update_all(primary: false)
+        # Définir le nouveau fichier prioritaire
+        attachment = @version.files_attachments.find(params[:primary_file_id])
+        attachment.update!(primary: true)
+      end
+
+      if @version.update(version_params)
+        redirect_to [ @text, @translation, :versions ],
+                    notice: "Version was successfully updated."
+      else
+        render :edit, status: :unprocessable_entity
+      end
     end
   end
 
@@ -67,8 +79,6 @@ class VersionsController < ApplicationController
     end
 
     def version_params
-      params.expect({
-        version: [ :name, :status, files: [] ]
-      })
+      params.require(:version).permit(:name, :status, files: [], primary_file_id: [])
     end
 end

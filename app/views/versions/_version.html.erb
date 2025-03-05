@@ -19,6 +19,9 @@
               <div class="ml-4">
                 <p class="text-sm font-medium text-gray-900 group-hover:text-blue-600">
                   <%= file.filename %>
+                  <% if file.primary? %>
+                    <span class="ml-2 text-yellow-500" title="Primary file">★</span>
+                  <% end %>
                 </p>
                 <p class="text-xs text-gray-500">
                   <%= number_to_human_size(file.byte_size) %>
