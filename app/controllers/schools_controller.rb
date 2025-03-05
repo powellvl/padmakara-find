@@ -51,7 +51,7 @@ class SchoolsController < ApplicationController
 
   private
     # Use callbacks to share common setup or constraints between actions.
-    def set_school
+    def set_school_and_breadcrumb
       @school = School.find(params.expect(:id))
       add_breadcrumb(@school.name, school_path(@school))
     end

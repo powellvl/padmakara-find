@@ -51,7 +51,7 @@ class TagsController < ApplicationController
 
   private
     # Use callbacks to share common setup or constraints between actions.
-    def set_tag
+    def set_tag_and_breadcrumb
       @tag = Tag.find(params.expect(:id))
       add_breadcrumb(@tag.name, tag_path(@tag))
     end
