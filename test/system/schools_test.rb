@@ -2,7 +2,8 @@ require "application_system_test_case"
 
 class SchoolsTest < ApplicationSystemTestCase
   setup do
-    @school = schools(:one)
+    @user = create(:user)
+    sign_in_as(@user)
   end
 
   test "visiting the index" do
@@ -14,7 +15,7 @@ class SchoolsTest < ApplicationSystemTestCase
     visit schools_url
     click_on "New school"
 
-    fill_in "Name", with: @school.name
+    fill_in "Name", with: "Nyingma"
     click_on "Create School"
 
     assert_text "School was successfully created"
@@ -22,6 +23,8 @@ class SchoolsTest < ApplicationSystemTestCase
   end
 
   test "should update School" do
+    @school = create(:school)
+
     visit school_url(@school)
     click_on "Edit this school", match: :first
 
@@ -33,6 +36,8 @@ class SchoolsTest < ApplicationSystemTestCase
   end
 
   test "should destroy School" do
+    @school = create(:school)
+
     visit school_url(@school)
     click_on "Destroy this school", match: :first
 

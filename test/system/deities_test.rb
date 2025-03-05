@@ -2,7 +2,9 @@ require "application_system_test_case"
 
 class DeitiesTest < ApplicationSystemTestCase
   setup do
-    @deity = deities(:one)
+    @user = create(:user)
+    sign_in_as(@user)
+    @deity = create(:deity)
   end
 
   test "visiting the index" do

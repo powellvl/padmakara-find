@@ -2,7 +2,9 @@ require "application_system_test_case"
 
 class VersionsTest < ApplicationSystemTestCase
   setup do
-    @version = versions(:one)
+    @user = create(:user)
+    sign_in_as(@user)
+    @version = create(:version)
   end
 
   test "visiting the index" do

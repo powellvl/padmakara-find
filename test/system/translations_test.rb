@@ -2,7 +2,9 @@ require "application_system_test_case"
 
 class TranslationsTest < ApplicationSystemTestCase
   setup do
-    @translation = translations(:one)
+    @user = create(:user)
+    sign_in_as(@user)
+    @translation = create(:translation)
   end
 
   test "visiting the index" do

@@ -2,7 +2,9 @@ require "application_system_test_case"
 
 class TextsTest < ApplicationSystemTestCase
   setup do
-    @text = texts(:one)
+    @user = create(:user)
+    sign_in_as(@user)
+    @text = create(:text)
   end
 
   test "visiting the index" do
@@ -16,7 +18,7 @@ class TextsTest < ApplicationSystemTestCase
 
     fill_in "Notes", with: @text.notes
     fill_in "Title phonetics", with: @text.title_phonetics
-    fill_in "Title tibetan", with: @text.title_tibetan
+    fill_in "Title tibetan", with: "༄༅། །བོད་སྐད་ཀྱི་མིང་ གསར་པ་"
     click_on "Create Text"
 
     assert_text "Text was successfully created"
