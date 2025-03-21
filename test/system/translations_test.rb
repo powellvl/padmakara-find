@@ -4,12 +4,17 @@ class TranslationsTest < ApplicationSystemTestCase
   setup do
     @user = create(:user)
     sign_in_as(@user)
-    @translation = create(:translation)
   end
 
   test "visiting the index" do
-    visit translations_url
-    assert_selector "h1", text: "Translations"
+    text = create(:text)
+    create(:translation, text: text, language: create(:language, :english))
+    create(:translation, text: text, language: create(:language, :french))
+
+    visit text_translations_url(text)
+
+    assert_text "English"
+    assert_text "French"
   end
 
   test "should create translation" do
