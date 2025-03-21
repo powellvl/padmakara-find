@@ -41,7 +41,6 @@ class TextsController < ApplicationController
   def destroy
     @text.destroy!
     redirect_to texts_path, status: :see_other, notice: "Text was successfully destroyed."
-    head :no_content
   end
 
   private
@@ -53,6 +52,6 @@ class TextsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def text_params
-      params.require(:text).permit(:title, :description, deity_ids: [], school_ids: [], tag_ids: [])
+      params.require(:text).permit(:title_tibetan, :title_phonetics, :notes, deity_ids: [], school_ids: [], tag_ids: [])
     end
 end

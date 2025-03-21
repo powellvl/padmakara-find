@@ -6,7 +6,7 @@
 
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
   <% @texts.each do |text| %>
-    <div class="max-w-sm p-6 bg-white border border-gray-10 rounded-lg shadow hover:shadow-lg transition-shadow duration-300 white:bg-gray-800 dark:border-gray-200">
+    <div id="<%= dom_id text %>" class="max-w-sm p-6 bg-white border border-gray-10 rounded-lg shadow hover:shadow-lg transition-shadow duration-300 white:bg-gray-800 dark:border-gray-200">
       <%= render text %>
       <div class="mt-4 space-x-2">
         <%= link_to 'See translations', text_translations_path(text), class: "inline-flex items-center px-4 py-2 text-sm font-medium text-gray-950 bg-white border border-gray-200 rounded-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 white:bg-gray-500 dark:text-gray-950 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700" %>

@@ -1,7 +1,7 @@
 FactoryBot.define do
   factory :text do
     sequence(:title_tibetan) { |n| "༄༅། །བོད་སྐད་ཀྱི་མིང་ #{n}" }
-    title_phonetics { "Tibetan Phonetics" }
+    sequence(:title_phonetics) { |n| "Phonetics #{n}" }
     notes { "Sample notes for this text" }
 
     trait :with_translations do
