@@ -1,4 +1,5 @@
 class TranslationsController < ApplicationController
+  before_action :authorize_admin
   before_action :set_text_and_breadcrumb
   before_action :set_translation_and_breadcrumb, only: %i[ edit update destroy ]
 
@@ -58,6 +59,12 @@ class TranslationsController < ApplicationController
     def set_translation_and_breadcrumb
       @translation = Translation.find(params.expect(:id))
       add_breadcrumb(@translation.language, text_translation_path(@text, @translation))
+    end
+
+    def authorize_admin
+      unless Current.user&.admin?
+        redirect_to root_path, alert: "Vous n'êtes pas autorisé à accéder à cette page."
+      end
     end
 
     # Only allow a list of trusted parameters through.

@@ -1,26 +1,28 @@
 class SchoolsController < ApplicationController
+  before_action :authorize_admin
   before_action :set_school_and_breadcrumb, only: %i[ show edit update destroy ]
 
   # GET /schools
   def index
     @schools = School.all
+    add_breadcrumb("Admin Dashboard", admin_path)
     add_breadcrumb("Schools", schools_path)
   end
 
   # GET /schools/1
   def show
-    add_breadcrumb(@school.name, school_path(@school))
   end
 
   # GET /schools/new
   def new
     @school = School.new
+    add_breadcrumb("Admin Dashboard", admin_path)
+    add_breadcrumb("Schools", schools_path)
     add_breadcrumb("New School", new_school_path)
   end
 
   # GET /schools/1/edit
   def edit
-    add_breadcrumb("Edit", edit_school_path(@school))
   end
 
   # POST /schools
@@ -53,7 +55,14 @@ class SchoolsController < ApplicationController
     # Use callbacks to share common setup or constraints between actions.
     def set_school_and_breadcrumb
       @school = School.find(params.expect(:id))
+      add_breadcrumb "Admin Dashboard", admin_path
       add_breadcrumb(@school.name, school_path(@school))
+    end
+
+    def authorize_admin
+      unless Current.user&.admin?
+        redirect_to root_path, alert: "Vous n'êtes pas autorisé à accéder à cette page."
+      end
     end
 
     # Only allow a list of trusted parameters through.

@@ -1,14 +1,17 @@
 class DeitiesController < ApplicationController
+  before_action :authorize_admin
   before_action :set_deity, only: %i[ show edit update destroy ]
 
   # GET /deities
   def index
     @deities = Deity.all
+    add_breadcrumb "Admin Dashboard", admin_path
     add_breadcrumb "Deities", deities_path
   end
 
   # GET /deities/1
   def show
+    add_breadcrumb "Admin Dashboard", admin_path
     add_breadcrumb "Deities", deities_path
     add_breadcrumb @deity.name_english, deity_path(@deity)
   end
@@ -16,12 +19,14 @@ class DeitiesController < ApplicationController
   # GET /deities/new
   def new
     @deity = Deity.new
+    add_breadcrumb "Admin Dashboard", admin_path
     add_breadcrumb "Deities", deities_path
     add_breadcrumb "New Deity", new_deity_path
   end
 
   # GET /deities/1/edit
   def edit
+    add_breadcrumb "Admin Dashboard", admin_path
     add_breadcrumb "Deities", deities_path
     add_breadcrumb @deity.name_english, deity_path(@deity)
     add_breadcrumb "Edit", edit_deity_path(@deity)
@@ -29,6 +34,7 @@ class DeitiesController < ApplicationController
 
   # POST /deities
   def create
+    add_breadcrumb "Admin Dashboard", admin_path
     @deity = Deity.new(deity_params)
 
     if @deity.save
@@ -57,6 +63,12 @@ class DeitiesController < ApplicationController
     # Use callbacks to share common setup or constraints between actions.
     def set_deity
       @deity = Deity.find(params.expect(:id))
+    end
+
+    def authorize_admin
+      unless Current.user&.admin?
+        redirect_to root_path, alert: "Vous n'êtes pas autorisé à accéder à cette page."
+      end
     end
 
     # Only allow a list of trusted parameters through.

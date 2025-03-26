@@ -1,4 +1,5 @@
 class TagsController < ApplicationController
+  before_action :authorize_admin
   before_action :set_tag_and_breadcrumb, only: %i[ show edit update destroy ]
 
   # GET /tags
@@ -54,6 +55,12 @@ class TagsController < ApplicationController
     def set_tag_and_breadcrumb
       @tag = Tag.find(params.expect(:id))
       add_breadcrumb(@tag.name, tag_path(@tag))
+    end
+
+    def authorize_admin
+      unless Current.user&.admin?
+        redirect_to root_path, alert: "Vous n'êtes pas autorisé à accéder à cette page."
+      end
     end
 
     # Only allow a list of trusted parameters through.

@@ -1,9 +1,11 @@
 class LanguagesController < ApplicationController
+  before_action :authorize_admin
   before_action :set_language, only: %i[ show edit update destroy ]
 
   # GET /languages
   def index
     @languages = Language.all
+    add_breadcrumb "Admin Dashboard", admin_path
     add_breadcrumb "Languages", languages_path
   end
 
@@ -16,6 +18,7 @@ class LanguagesController < ApplicationController
   # GET /languages/new
   def new
     @language = Language.new
+    add_breadcrumb "Admin Dashboard", admin_path
     add_breadcrumb "Languages", languages_path
     add_breadcrumb "New Language", new_language_path
   end
@@ -29,6 +32,7 @@ class LanguagesController < ApplicationController
 
   # POST /languages
   def create
+    add_breadcrumb "Admin Dashboard", admin_path
     @language = Language.new(language_params)
 
     if @language.save
@@ -56,7 +60,14 @@ class LanguagesController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_language
+      add_breadcrumb "Admin Dashboard", admin_path
       @language = Language.find(params.expect(:id))
+    end
+
+    def authorize_admin
+      unless Current.user&.admin?
+        redirect_to root_path, alert: "Vous n'êtes pas autorisé à accéder à cette page."
+      end
     end
 
     # Only allow a list of trusted parameters through.

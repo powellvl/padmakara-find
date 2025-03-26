@@ -1,11 +1,10 @@
 <% 
   menu_items = [
-    { name: "Texts", path: root_path },
-    { name: "Tags", path: tags_path },
-    { name: "Schools", path: schools_path },
-    { name: "Deities", path: deities_path },
-    { name: "Languages", path: languages_path }
+    { name: "Texts", path: root_path }
   ] 
+  
+  # Ajouter l'élément Admin Dashboard seulement si l'utilisateur est admin
+  menu_items << { name: "Admin Dashboard", path: admin_path } if Current.user&.admin?
 %>
 
 <nav class="bg-slate-50">
@@ -52,8 +51,8 @@
                 To: "transform opacity-0 scale-95"
             -->
             <div id="user-menu" class="hidden absolute right-0 z-10 py-1 mt-2 w-48 bg-white rounded-md ring-1 shadow-lg origin-top-right ring-black/5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1">
-              <!-- Active: "bg-gray-100 outline-none", Not Active: "" -->
-              <a href="#" class="block px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="user-menu-item-0">Your Profile</a>
+                <!-- Active: "bg-gray-100 outline-none", Not Active: "" -->
+                <%= link_to "Your Profile", user_path(Current.user), class: "block px-4 py-2 text-sm text-gray-700" %>
               <div class="block px-4 py-2 text-sm text-gray-700">
                 <%= button_to "Sign out", session_path, method: :delete, class: "w-full text-left" %>
               </div>
