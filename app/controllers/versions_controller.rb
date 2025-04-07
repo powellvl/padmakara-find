@@ -1,4 +1,5 @@
 class VersionsController < ApplicationController
+  before_action :authorize_admin, only: %i[ destroy ]
   before_action :set_text_and_breadcrumb
   before_action :set_translation_and_breadcrumb
   before_action :set_version_and_breadcrumb, only: %i[ show edit edit_files update destroy ]

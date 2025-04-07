@@ -1,0 +1,10 @@
+<% content_for :title, "Editing school" %>
+
+<div class="md:w-2/3 w-full">
+  <h1 class="font-bold text-4xl">Editing school</h1>
+
+  <%= render "form", school: @school %>
+
+  <%= link_to "Show this school", admin_school_path(@school), class: "ml-2 rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
+  <%= link_to "Back to schools", admin_schools_path, class: "ml-2 rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
+</div>

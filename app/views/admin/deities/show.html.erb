@@ -1,0 +1,10 @@
+<p style="color: green"><%= notice %></p>
+
+<%= render @deity %>
+
+<div>
+  <%= link_to "Edit this deity", edit_admin_deity_path(@deity) %> |
+  <%= link_to "Back to deities", admin_deities_path %>
+
+  <%= button_to "Destroy this deity", admin_deity_path(@deity), method: :delete %>
+</div>

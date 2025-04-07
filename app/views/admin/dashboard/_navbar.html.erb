@@ -1,0 +1,31 @@
+<% 
+  menu_items = [
+    { name: "Dashboard", path: admin_path },
+    { name: "Users", path: admin_users_path },
+    { name: "Tags", path: admin_tags_path },
+    { name: "Schools", path: admin_schools_path },
+    { name: "Deities", path: admin_deities_path },
+    { name: "Languages", path: admin_languages_path }
+  ] 
+%>
+
+
+<div class="w-64 hidden md:block bg-white shadow-md min-h-screen h-full">
+      <div class="sticky top-0 pt-3">
+        <div class="text-center mb-4">
+        </div>
+        <div class="text-center mb-4">
+          <div class="mb-2">
+            <!-- Avatar placeholder -->
+          </div>
+        </div>
+        
+        <ul class="space-y-2 px-3">
+          <% menu_items.each do |menu_item| %>
+            <li>
+              <%= link_to menu_item[:name], menu_item[:path], class: "flex items-center px-3 py-2 rounded-md mt-2 #{current_page?(menu_item[:path]) ? 'bg-gray-700 text-white' : 'text-gray-800 hover:bg-gray-600 hover:text-white'}" %>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    </div>

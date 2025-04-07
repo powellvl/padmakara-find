@@ -1,14 +1,16 @@
 Rails.application.routes.draw do
-resources :users
-  get "admin", to: "admin#index"
+  get "admin", to: "admin/dashboard#index"
+  namespace :admin do
+    resources :users
+    resources :languages
+    resources :deities
+    resources :schools
+    resources :tags
+  end
   resources :languages
-  resources :users
-  patch "users/:id/edit_role", to: "users#edit_role", as: "edit_role_user"
+  resources :users, only: %i[ show ]
   resource :session
   resources :passwords, param: :token
-  resources :tags
-  resources :schools
-  resources :deities
   resources :texts do
     resources :translations do
       resources :versions do

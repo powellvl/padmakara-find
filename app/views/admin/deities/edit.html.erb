@@ -1,0 +1,12 @@
+<% content_for :title, "Editing deity" %>
+
+<h1>Editing deity</h1>
+
+<%= render "form", deity: @deity %>
+
+<br>
+
+<div>
+  <%= link_to "Show this deity", admin_deity_path(@deity) %> |
+  <%= link_to "Back to deities", admin_deities_path %>
+</div>

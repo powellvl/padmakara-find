@@ -4,6 +4,12 @@ class ApplicationController < ActionController::Base
   allow_browser versions: :modern
   before_action :set_breadcrumbs
 
+  def authorize_admin
+    unless Current.user&.admin?
+      redirect_to root_path, alert: "You are not authorized to access this page."
+    end
+  end
+
   def add_breadcrumb(label, path)
     @breadcrumbs << {
       label: label,

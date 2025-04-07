@@ -1,0 +1,49 @@
+<div class="min-h-screen bg-gray-50">
+  <div class="flex">  
+    <!-- Barre latérale -->
+    <%= render "admin/dashboard/navbar"%>
+
+    <!-- Contenu principal -->
+    <main class="flex-1 px-4 md:px-6">
+      <% if notice %>
+        <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4 rounded shadow-sm" role="alert">
+          <p><%= notice %></p>
+        </div>
+      <% end %>
+
+      <div class="bg-white shadow-md rounded-lg overflow-hidden mt-4 w-full">
+        <div class="flex justify-between items-center p-6 border-b border-gray-200">
+          <h1 class="text-2xl font-semibold text-gray-800">Deities</h1>
+          <%= link_to new_admin_deity_path, class: "bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out flex items-center" do %>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+            </svg>
+            New deity
+          <% end %>
+        </div>
+
+        <div class="p-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <% @deities.each do |deity| %>
+              <div class="bg-white border border-gray-200 rounded-lg shadow hover:shadow-lg transition-shadow duration-300">
+                <div class="p-6">
+                  <%= render deity %>
+                  <div class="mt-4 flex space-x-2">
+                    <%= link_to 'View', admin_deity_path(deity), class: "text-blue-600 hover:text-blue-900" %>
+                    <%= link_to 'Edit', [:edit, :admin, deity], class: "text-indigo-600 hover:text-indigo-900" %>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+          </div>
+          
+          <% if @deities.empty? %>
+            <div class="p-8 text-center">
+              <p class="text-gray-500">No deities found</p>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>

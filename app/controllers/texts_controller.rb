@@ -1,6 +1,6 @@
 class TextsController < ApplicationController
+  before_action :authorize_admin, only: %i[ destroy ]
   before_action :set_text, only: %i[ edit update destroy ]
-
   # GET /texts or /texts.json
   def index
     @texts = Text.all
@@ -49,7 +49,6 @@ class TextsController < ApplicationController
       @text = Text.find(params[:id])
       add_breadcrumb(@text.title_tibetan, text_path(@text))
     end
-
     # Only allow a list of trusted parameters through.
     def text_params
       params.require(:text).permit(:title_tibetan, :title_phonetics, :notes, deity_ids: [], school_ids: [], tag_ids: [])

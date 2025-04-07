@@ -1,0 +1,132 @@
+<div class="min-h-screen bg-gray-50">
+  <div class="flex">
+    <!-- Barre latérale -->
+
+    <%= render "navbar"%>
+
+    <!-- Contenu principal -->
+    <main class="flex-1 px-4 md:px-6">
+      <div class="flex justify-between items-center flex-wrap py-3 mb-3 border-b">
+        <h1 class="text-2xl font-semibold">Tableau de bord Admin</h1>
+      </div>
+
+      <!-- Cartes statistiques -->
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
+        <div class="bg-white rounded-lg shadow p-5">
+          <div class="flex items-center">
+            <div class="rounded-full bg-blue-100 p-3 mr-3">
+              <i class="bi bi-people text-xl text-blue-600"></i>
+            </div>
+            <div>
+              <h6 class="text-sm text-gray-500 mb-0">Utilisateurs</h6>
+              <h2 class="text-2xl font-semibold"><%= User.count %></h2>
+            </div>
+          </div>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow p-5">
+          <div class="flex items-center">
+            <div class="rounded-full bg-green-100 p-3 mr-3">
+              <i class="bi bi-tags text-xl text-green-600"></i>
+            </div>
+            <div>
+              <h6 class="text-sm text-gray-500 mb-0">Tags</h6>
+              <h2 class="text-2xl font-semibold"><%= Tag.count rescue 0 %></h2>
+            </div>
+          </div>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow p-5">
+          <div class="flex items-center">
+            <div class="rounded-full bg-yellow-100 p-3 mr-3">
+              <i class="bi bi-bank text-xl text-yellow-600"></i>
+            </div>
+            <div>
+              <h6 class="text-sm text-gray-500 mb-0">Écoles</h6>
+              <h2 class="text-2xl font-semibold"><%= School.count rescue 0 %></h2>
+            </div>
+          </div>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow p-5">
+          <div class="flex items-center">
+            <div class="rounded-full bg-sky-100 p-3 mr-3">
+              <i class="bi bi-translate text-xl text-sky-600"></i>
+            </div>
+            <div>
+              <h6 class="text-sm text-gray-500 mb-0">Langues</h6>
+              <h2 class="text-2xl font-semibold"><%= Language.count rescue 0 %></h2>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Accès rapide -->
+      <h4 class="text-xl font-medium mb-4">Accès rapide</h4>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <div class="bg-white rounded-lg shadow">
+          <div class="p-5">
+            <h5 class="text-lg font-medium mb-4">Utilisateurs récents</h5>
+            <div class="overflow-x-auto">
+              <table class="min-w-full">
+                <thead class="bg-gray-50">
+                  <tr>
+                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-500">Nom</th>
+                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-500">Email</th>
+                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-500">Rôle</th>
+                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-500">Actions</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                  <% User.order(created_at: :desc).limit(5).each do |user| %>
+                    <tr class="hover:bg-gray-50">
+                      <td class="px-4 py-2 text-sm"><%= user.email %></td>
+                      <td class="px-4 py-2 text-sm">
+                        <span class="px-2 py-1 text-xs rounded-full <%= user.admin? ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800' %>">
+                          <%= user.admin? ? 'Admin' : 'Utilisateur' %>
+                        </span>
+                      </td>
+                      <td class="px-4 py-2 text-sm">
+                        <%= link_to "Voir",admin_user_path(user), class: "px-3 py-1 text-xs text-blue-600 border border-blue-600 rounded-md hover:bg-blue-50" %>
+                      </td>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            </div>
+            <%= link_to "Tous les utilisateurs", admin_users_path, class: "btn btn-primary btn-sm float-end" %>
+          </div>
+        </div>
+        
+        <div class="col-md-6">
+          <div class="card border-0 shadow-sm">
+            <div class="card-body">
+              <h5 class="card-title">Actions rapides</h5>
+              <div class="list-group">
+                <%= link_to new_admin_user_path, class: "list-group-item list-group-item-action d-flex align-items-center" do %>
+                  <i class="bi bi-person-plus me-3 text-primary"></i> Ajouter un utilisateur
+                <% end %>
+                
+                <%= link_to new_admin_tag_path, class: "list-group-item list-group-item-action d-flex align-items-center" do %>
+                  <i class="bi bi-tag me-3 text-success"></i> Créer un tag
+                <% end %>
+                
+                <%= link_to new_admin_school_path, class: "list-group-item list-group-item-action d-flex align-items-center" do %>
+                  <i class="bi bi-building me-3 text-warning"></i> Ajouter une école
+                <% end %>
+                
+                <%= link_to new_admin_deity_path, class: "list-group-item list-group-item-action d-flex align-items-center" do %>
+                  <i class="bi bi-stars mr-3 text-sky-600"></i> Ajouter une divinité
+                <% end %>
+                
+                <%= link_to new_admin_language_path, class: "list-group-item list-group-item-action flex items-center" do %>
+                  <i class="bi bi-translate mr-3 text-rose-600"></i> Ajouter une langue
+                <% end %>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
