@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_03_24_102820) do
+ActiveRecord::Schema[8.0].define(version: 2025_04_09_135108) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -138,6 +138,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_24_102820) do
     t.integer "status"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "title"
+    t.string "subtitle"
     t.index ["name", "translation_id"], name: "index_versions_on_name_and_translation_id", unique: true
     t.index ["translation_id"], name: "index_versions_on_translation_id"
   end

@@ -80,6 +80,6 @@ class VersionsController < ApplicationController
     end
 
     def version_params
-      params.require(:version).permit(:name, :status, files: [], primary_file_id: [])
+      params.require(:version).permit(:title, :subtitle, :name, :status, files: [], primary_file_id: [])
     end
 end
