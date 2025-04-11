@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
   get "admin", to: "admin/dashboard#index"
+  get "/search", to: "search#index"
   namespace :admin do
     resources :users
     resources :languages
