@@ -12,8 +12,9 @@
     
     <%# Text Information %>
     <div class="flex-grow space-y-6">
-      <div>
+      <div class="flex">
         <h2 class="text-2xl font-bold text-gray-800 mb-2"><%= @text.title_tibetan %></h2>
+        <h2 class="text-2xl font-bold text-gray-800 mb-2"> <%= @text.title_phonetics %></h2>
       </div>
 
       <% if @text.deities.any? %>
@@ -32,26 +33,26 @@
       <% if @text.schools.any? %>
         <div>
           <h5 class="text-sm font-semibold text-gray-600 uppercase tracking-wider mb-2">Schools</h5>
-          <ul class="grid grid-cols-2 gap-2">
+          <div class="flex flex-wrap gap-2">
             <% @text.schools.each do |school| %>
-              <li class="text-gray-700 bg-gray-50 rounded-md px-3 py-2">
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
                 <%= school.name %>
-              </li>
+              </span>
             <% end %>
-          </ul>
+          </div>
         </div>
       <% end %>
 
       <% if @text.tags.any? %>
         <div>
           <h5 class="text-sm font-semibold text-gray-600 uppercase tracking-wider mb-2">Tags</h5>
-          <ul class="grid grid-cols-2 gap-2">
+          <div class="flex flex-wrap gap-2">
             <% @text.tags.each do |tag| %>
-              <li class="text-gray-700 bg-gray-50 rounded-md px-3 py-2">
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
                 <%= tag.name %>
-              </li>
+              </span>
             <% end %>
-          </ul>
+          </div>
         </div>
       <% end %>
       <%= link_to 'Edit', [:edit, @text], class: "inline-flex items-center px-4 py-2 text-sm font-medium text-blue-700 bg-white border border-blue-700 rounded-lg hover:bg-blue-700 hover:text-white focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-white dark:bg-white-800 dark:text-blue-800 dark:border-blue-600 dark:hover:text-white dark:hover:bg-blue-700" %>
