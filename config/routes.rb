@@ -16,6 +16,8 @@ Rails.application.routes.draw do
     resources :translations do
       resources :versions do
         member do
+          post :generate_cover
+          delete :remove_cover
           get :edit_files
         end
       end

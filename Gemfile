@@ -15,6 +15,12 @@ gem "turbo-rails"
 # Hotwire's modest JavaScript framework [https://stimulus.hotwired.dev]
 gem "stimulus-rails"
 
+gem "pdf-reader" # Pour lire les PDFs
+
+gem "mini_magick" # Pour manipuler les images
+
+gem "pdftoimage" # Pour convertir les PDFs en images
+
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
 gem "bcrypt", "~> 3.1.7"
 

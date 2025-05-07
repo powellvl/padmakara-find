@@ -50,20 +50,19 @@ class TranslationsController < ApplicationController
   end
 
   private
-    def set_text_and_breadcrumb
-      @text = Text.find(params.expect(:text_id))
-      add_breadcrumb(@text.title_tibetan, text_translations_path(@text))
-    end
+  def set_text_and_breadcrumb
+    @text = Text.find(params[:text_id])
+    add_breadcrumb(@text.title_tibetan, text_translations_path(@text))
+  end
 
     # Use callbacks to share common setup or constraints between actions.
     def set_translation_and_breadcrumb
-      @translation = Translation.find(params.expect(:id))
-      add_breadcrumb(@translation.language, text_translation_path(@text, @translation))
+      @translation = Translation.find(params[:id])
+      add_breadcrumb(@translation.language.name, text_translation_path(@text, @translation))
     end
-
 
     # Only allow a list of trusted parameters through.
     def translation_params
-      params.expect(translation: [ :language ])
+      params.require(:translation).permit(:language_id, :title, :subtitle, :author, :cover_file, :other_params_as_needed)
     end
 end

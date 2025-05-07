@@ -1,18 +1,25 @@
-<div>
+<!-- filepath: app/views/texts/_text.html.erb -->
+<div id="<%= dom_id text %>" class="rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 flex flex-col h-full">
+  <div class="w-full bg-gray-50">
+    <div class="w-full aspect-[210/297] relative">
+      <%= display_text_cover(text, class: "w-full h-full object-contain") %>
+    </div>
+  </div>
   
-  <p class="mb-3 font-normal text-gray-700 dark:text-gray-600">
-    <strong>Title tibetan:</strong>
-    <%= text.title_tibetan %>
-  </p>
-
-  <p class="mb-3 font-normal text-gray-700 dark:text-gray-600">
-    <strong>Title phonetics:</strong>
-    <%= text.title_phonetics %>
-  </p>
-
-  <p class="mb-3 font-normal text-gray-700 dark:text-gray-600">
-    <strong>Notes:</strong>
-    <%= text.notes %>
-  </p>
-
+  <div class="p-6 flex-grow">
+    <h2 class="text-xl font-serif text-gray-900 mb-1 truncate"><%= text.title_tibetan %></h2>
+    
+    <div class="mt-2 flex items-center text-sm text-gray-500">
+      <!-- Autres informations du texte... -->
+    </div>
+  </div>
+  
+  <div class="px-6 pb-6 pt-2 flex flex-wrap gap-2">
+    <%= link_to text_translations_path(text), class: "flex-grow sm:flex-grow-0 inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors" do %>
+      <!-- Icon SVG -->
+      Traductions
+    <% end %>
+    
+    <!-- Autres actions... -->
+  </div>
 </div>

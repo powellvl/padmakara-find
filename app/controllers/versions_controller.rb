@@ -36,22 +36,22 @@ class VersionsController < ApplicationController
   end
 
   def update
-    @version = Version.find(params[:id])
-
-    Version.transaction do
+    respond_to do |format|
+      # Gérer le changement de fichier primaire
       if params[:primary_file_id].present?
-        # Réinitialiser tous les fichiers comme non-prioritaires
-        @version.files_attachments.update_all(primary: false)
-        # Définir le nouveau fichier prioritaire
         attachment = @version.files_attachments.find(params[:primary_file_id])
-        attachment.update!(primary: true)
+        service = DefineVersionFileAsPrimary.new(@version, attachment)
+
+        unless service.call
+          format.html { redirect_to [ @text, @translation, @version ], alert: "Erreur lors de la définition du fichier primaire." }
+          return
+        end
       end
 
       if @version.update(version_params)
-        redirect_to [ @text, @translation, :versions ],
-                    notice: "Version was successfully updated."
+        format.html { redirect_to [ @text, @translation, @version ], notice: "Version mise à jour avec succès." }
       else
-        render :edit, status: :unprocessable_entity
+        format.html { render :edit, status: :unprocessable_entity }
       end
     end
   end
