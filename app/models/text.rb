@@ -16,4 +16,18 @@ class Text < ApplicationRecord
     cover_for_language("French") ||
     translations.map(&:cover_file).compact.first
   end
+
+  # Nouvelle méthode pour obtenir le nom de la dernière version publiée
+  def latest_published_version_title(language_code)
+    translation = translations.joins(:language).where(languages: { name: language_code }).first
+    version = translation&.latest_published_version
+    version&.title
+  end
+
+  # Méthode pour obtenir le nom de la version avec priorité (anglais, français, autres)
+  def preferred_version_title
+    latest_published_version_title("English") ||
+    latest_published_version_title("French") ||
+    translations.map { |t| t.latest_published_version&.title }.compact.first
+  end
 end
