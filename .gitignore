@@ -6,6 +6,7 @@
 
 # Ignore bundler config.
 /.bundle
+.DS_Store
 
 # Ignore all environment files.
 /.env*
@@ -35,3 +36,4 @@
 
 /app/assets/builds/*
 !/app/assets/builds/.keep
+.DS_Store
