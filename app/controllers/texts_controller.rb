@@ -47,7 +47,7 @@ class TextsController < ApplicationController
     # Use callbacks to share common setup or constraints between actions.
     def set_text
       @text = Text.find(params[:id])
-      add_breadcrumb(@text.title_tibetan, text_path(@text))
+      add_breadcrumb(@text.title_phonetics, text_path(@text))
     end
     # Only allow a list of trusted parameters through.
     def text_params

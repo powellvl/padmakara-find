@@ -66,7 +66,7 @@ class VersionsController < ApplicationController
   private
     def set_text_and_breadcrumb
       @text = Text.find(params[:text_id])
-      add_breadcrumb(@text.title_tibetan, text_translations_path(@text))
+      add_breadcrumb(@text.title_phonetics, text_translations_path(@text))
     end
 
     def set_translation_and_breadcrumb
