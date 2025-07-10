@@ -1,9 +1,9 @@
 
-<div class="bg-white p-6">
+<div class="bg-white">
   <% if translation.cover_file.present? %>
-    <div class="w-full aspect-[210/297] max-h-48  mb-4">
+    <div class="w-full max-h-80  mb-2">
       <% if translation.cover_file.content_type.start_with?('image/') %>
-        <%= image_tag url_for(translation.cover_file), alt: "Cover", class: "w-full h-full object-contain" %>
+        <%= image_tag url_for(translation.cover_file), alt: "Cover", class: "w-full rounded-2xl h-full object-contain" %>
       <% else %>
         <div class="flex items-center justify-center h-full">
           <svg class="h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
