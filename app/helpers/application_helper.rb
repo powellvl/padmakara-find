@@ -3,6 +3,26 @@ module ApplicationHelper
     index == collection.size - 1
   end
 
+  def language_code(translation)
+    language = translation.language.name
+    case language
+    when "Tibetan"
+      "bo"
+    when "English"
+      "en"
+    when "French"
+      "fr"
+    when "German"
+      "de"
+    when "Spanish"
+      "es"
+    when "Portuguese"
+      "pt"
+    else
+      language.downcase
+    end
+  end
+
   def file_icon_path(file)
     if file.representable?
       file.representation(resize_to_limit: [ 100, 100 ])
