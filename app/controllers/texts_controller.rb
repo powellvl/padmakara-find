@@ -51,6 +51,6 @@ class TextsController < ApplicationController
     end
     # Only allow a list of trusted parameters through.
     def text_params
-      params.require(:text).permit(:title_tibetan, :title_wylie, :title_phonetics, :notes, deity_ids: [], school_ids: [], tag_ids: [])
+      params.require(:text).permit(:title_tibetan, :title_wylie, :title_phonetics, :notes, deity_ids: [], school_ids: [], tag_ids: [], author_ids: [])
     end
 end

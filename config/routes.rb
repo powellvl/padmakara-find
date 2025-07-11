@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :authors
   get "admin", to: "admin/dashboard#index"
   get "/search", to: "search#index"
   namespace :admin do
@@ -7,6 +8,7 @@ Rails.application.routes.draw do
     resources :deities
     resources :schools
     resources :tags
+    resources :authors
   end
   resources :languages
   resources :users, only: %i[ show ]

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_07_124927) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_10_175950) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -38,6 +38,22 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_07_124927) do
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "authors", force: :cascade do |t|
+    t.string "name_english"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "authors_texts", force: :cascade do |t|
+    t.integer "author_id", null: false
+    t.integer "text_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["author_id", "text_id"], name: "index_authors_texts_on_author_id_and_text_id", unique: true
+    t.index ["author_id"], name: "index_authors_texts_on_author_id"
+    t.index ["text_id"], name: "index_authors_texts_on_text_id"
   end
 
   create_table "deities", force: :cascade do |t|
@@ -147,6 +163,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_07_124927) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "authors_texts", "authors", on_delete: :cascade
+  add_foreign_key "authors_texts", "texts", on_delete: :cascade
   add_foreign_key "deities_texts", "deities", on_delete: :cascade
   add_foreign_key "deities_texts", "texts", on_delete: :cascade
   add_foreign_key "schools_texts", "schools", on_delete: :cascade
