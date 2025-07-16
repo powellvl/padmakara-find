@@ -119,12 +119,7 @@ function applyInactivePillStyle(pillContent) {
  * @param {HTMLElement} filterText - Texte du bouton
  * @param {HTMLElement} chevronDown - Icône chevron
  */
-function updateToggleButtonState(
-  filtersSection,
-  filtersContent,
-  filterText,
-  chevronDown
-) {
+function updateToggleButtonState(filtersSection, filterText, chevronDown) {
   try {
     const isHidden = filtersSection.classList.contains("hidden");
 

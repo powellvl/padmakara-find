@@ -4,6 +4,8 @@ import "controllers";
 import TomSelect from "tom-select";
 import "search";
 
+import "filters";
+
 document.addEventListener("turbo:load", function () {
   document.querySelectorAll(".tomselect").forEach((element) => {
     new TomSelect(element, {
