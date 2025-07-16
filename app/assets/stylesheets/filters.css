@@ -1,0 +1,236 @@
+/* ===== STYLES POUR LA BARRE DE FILTRES ===== */
+
+/* Conteneur principal des filtres */
+.filters-container {
+  background: white;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Bouton toggle des filtres */
+.filters-toggle-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  margin-bottom: 50px;
+}
+
+.filters-toggle-button:hover {
+  background-color: #2563eb;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.filters-toggle-button:active {
+  transform: translateY(0);
+}
+
+/* Icône chevron dans le bouton toggle */
+.filters-toggle-chevron {
+  transition: transform 0.2s ease-in-out;
+  width: 1rem;
+  height: 1rem;
+}
+
+/* Section des filtres */
+.filters-section {
+  transition: all 0.3s ease-in-out;
+}
+
+.filters-section.hidden {
+  display: none;
+}
+
+/* Grille des filtres */
+.filters-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Groupe de filtres (schools, deities, tags) */
+.filter-group {
+  padding: 1rem;
+}
+
+.filter-group h4 {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+  margin: 0 0 0.75rem 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Conteneur des pills */
+.filter-pills-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+/* ===== STYLES DES PILLS ===== */
+
+/* Pill container */
+.pill-filter {
+  display: inline-block;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+/* Contenu de la pill */
+.pill-content {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s ease-in-out;
+  background-color: #f3f4f6;
+  color: #4b5563;
+  user-select: none;
+}
+
+/* États des pills */
+.pill-active {
+  transform: scale(1.05) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+.pill-inactive {
+  transform: scale(1) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Effet hover sur les pills */
+.pill-filter:hover .pill-content {
+  transform: scale(1.02) !important;
+}
+
+/* Checkbox caché dans les pills */
+.pill-checkbox {
+  display: none;
+}
+
+/* ===== BOUTONS D'ACTION ===== */
+
+/* Conteneur des boutons d'action */
+.filter-actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  justify-content: flex-start;
+  margin-top: 1rem;
+  padding-top: 1rem;
+}
+
+/* Bouton Apply Filters */
+.apply-filters-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  background-color: #10b981;
+  color: white;
+  border: none;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.apply-filters-button:hover {
+  background-color: #059669;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.apply-filters-button:active {
+  transform: translateY(0);
+}
+
+/* Bouton Clear Filters */
+.clear-filters-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  background-color: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.clear-filters-button:hover {
+  background-color: #dc2626;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.clear-filters-button:active {
+  transform: translateY(0);
+}
+
+/* ===== RESPONSIVE ===== */
+
+/* Tablette */
+@media (max-width: 768px) {
+  .filters-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .filter-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .apply-filters-button,
+  .clear-filters-button {
+    justify-content: center;
+  }
+}
+
+/* Mobile */
+@media (max-width: 640px) {
+  .filters-container {
+    padding: 0.75rem;
+  }
+
+  .filter-group {
+    padding: 0.75rem;
+  }
+
+  .filters-toggle-button {
+    width: 100%;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+
+  .filter-pills-container {
+    gap: 0.375rem;
+  }
+
+  .pill-content {
+    font-size: 0.8125rem;
+    padding: 0.3125rem 0.625rem;
+  }
+}

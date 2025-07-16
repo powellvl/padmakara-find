@@ -14,11 +14,95 @@
     <% end %>
   </div>
   
+  <!-- Barre de filtres -->
+  <div class="filters-container">
+    <!-- Bouton toggle des filtres -->
+    <button id="toggleFilters" class="filters-toggle-button">
+      <svg id="filterIcon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+      </svg>
+      <span id="filterText">Show Filters</span>
+      <svg id="chevronDown" class="filters-toggle-chevron" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+      </svg>
+    </button>
+
+    <!-- Section des filtres -->
+    <div id="filtersSection" class="filters-section" data-has-active-filters="<%= (@selected_school_ids.any? || @selected_deity_ids.any? || @selected_tag_ids.any?) ? 'true' : 'false' %>">
+      <%= form_with url: texts_path, method: :get, local: true do |form| %>
+        <div class="filters-grid">
+          <!-- Filtre par Schools -->
+          <div class="filter-group">
+            <h4>Schools</h4>
+            <div class="filter-pills-container">
+              <%= form.collection_check_boxes :school_ids, @schools, :id, :name, { checked: @selected_school_ids } do |b| %>
+                <label class="pill-filter" data-category="school">
+                  <%= b.check_box(class: "pill-checkbox") %>
+                  <span class="pill-content">
+                    <%= b.text %>
+                  </span>
+                </label>
+              <% end %>
+            </div>
+          </div>
+          
+          <!-- Filtre par Deities -->
+          <div class="filter-group">
+            <h4>Deities</h4>
+            <div class="filter-pills-container">
+              <%= form.collection_check_boxes :deity_ids, @deities, :id, :name_english, { checked: @selected_deity_ids } do |b| %>
+                <label class="pill-filter" data-category="deity">
+                  <%= b.check_box(class: "pill-checkbox") %>
+                  <span class="pill-content">
+                    <%= b.text %>
+                  </span>
+                </label>
+              <% end %>
+            </div>
+          </div>
+          
+          <!-- Filtre par Tags -->
+          <div class="filter-group">
+            <h4>Tags</h4>
+            <div class="filter-pills-container">
+              <%= form.collection_check_boxes :tag_ids, @tags, :id, :name, { checked: @selected_tag_ids } do |b| %>
+                <label class="pill-filter" data-category="tag">
+                  <%= b.check_box(class: "pill-checkbox") %>
+                  <span class="pill-content">
+                    <%= b.text %>
+                  </span>
+                </label>
+              <% end %>
+            </div>
+          </div>
+        </div>
+        
+        <div class="filter-actions">
+          <%= form.submit "Apply Filters", class: "apply-filters-button" %>
+          <button type="button" id="clearFiltersBtn" class="clear-filters-button">
+            Clear Filters
+          </button>
+        </div>
+      <% end %>
+    </div>
+  </div>
+  
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
     <% @texts.each do |text| %>
       <%= render text %>
     <% end %>
   </div>
 </div>
+
+<script type="module">
+import { PadmakaraFilters } from "filters";
+
+// Initialiser le système de filtres avec l'URL de clear
+document.addEventListener('DOMContentLoaded', function() {
+  if (PadmakaraFilters) {
+    PadmakaraFilters.init('<%= texts_path %>');
+  }
+});
+</script>
 
 

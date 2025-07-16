@@ -9,3 +9,6 @@ pin "controllers", preload: true
 pin "tom-select", to: "https://ga.jspm.io/npm:tom-select@2.2.2/dist/js/tom-select.complete.js"
 pin "@deltablot/dropzone", to: "@deltablot--dropzone.js" # @7.2.0
 pin_all_from "app/javascript/controllers", under: "controllers"
+
+# Pin des assets JavaScript personnalisés
+pin "filters", to: "filters.js"
