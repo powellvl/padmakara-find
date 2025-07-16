@@ -3,7 +3,7 @@
 
   <div class="mb-8">
     <%= form_with url: search_path, method: :get, local: true, class: "w-full" do |f| %>
-      <div class="relative flex items-center">
+      <div class="relative flex items-center mb-4">
         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
@@ -13,16 +13,110 @@
           class: "pl-10 pr-4 py-3 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all" %>
         <%= f.submit "Rechercher", class: "ml-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors duration-200 shadow-sm" %>
       </div>
+
+      <!-- Bouton pour afficher/masquer les filtres -->
+      <button type="button" id="toggleFilters" class="filters-toggle-button">
+        <svg id="filterIcon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+        </svg>
+        <span id="filterText">Show Filters</span>
+        <svg id="chevronDown" class="filters-toggle-chevron" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+
+      <!-- Section des filtres -->
+      <div id="filtersSection" class="filters-section" data-has-active-filters="<%= (@selected_school_ids.any? || @selected_deity_ids.any? || @selected_tag_ids.any? || @selected_content_types != ['texts', 'versions', 'files']) ? 'true' : 'false' %>">
+        <div class="filters-grid">
+          <!-- Filtre par Schools -->
+          <div class="filter-group">
+            <h4>Schools</h4>
+            <div class="filter-pills-container">
+              <%= f.collection_check_boxes :school_ids, @schools, :id, :name, { checked: @selected_school_ids } do |b| %>
+                <label class="pill-filter" data-category="school">
+                  <%= b.check_box(class: "pill-checkbox") %>
+                  <span class="pill-content">
+                    <%= b.text %>
+                  </span>
+                </label>
+              <% end %>
+            </div>
+          </div>
+          
+          <!-- Filtre par Deities -->
+          <div class="filter-group">
+            <h4>Deities</h4>
+            <div class="filter-pills-container">
+              <%= f.collection_check_boxes :deity_ids, @deities, :id, :name_english, { checked: @selected_deity_ids } do |b| %>
+                <label class="pill-filter" data-category="deity">
+                  <%= b.check_box(class: "pill-checkbox") %>
+                  <span class="pill-content">
+                    <%= b.text %>
+                  </span>
+                </label>
+              <% end %>
+            </div>
+          </div>
+          
+          <!-- Filtre par Tags -->
+          <div class="filter-group">
+            <h4>Tags</h4>
+            <div class="filter-pills-container">
+              <%= f.collection_check_boxes :tag_ids, @tags, :id, :name, { checked: @selected_tag_ids } do |b| %>
+                <label class="pill-filter" data-category="tag">
+                  <%= b.check_box(class: "pill-checkbox") %>
+                  <span class="pill-content">
+                    <%= b.text %>
+                  </span>
+                </label>
+              <% end %>
+            </div>
+          </div>
+
+          <!-- Filtre par Types de Contenu -->
+          <div class="filter-group">
+            <h4>Content Types</h4>
+            <div class="filter-pills-container">
+              <% @content_type_options.each do |option| %>
+                <label class="pill-filter" data-category="content-type">
+                  <%= check_box_tag "content_types[]", 
+                                    option[:id], 
+                                    @selected_content_types.include?(option[:id]),
+                                    class: "pill-checkbox" %>
+                  <span class="pill-content">
+                    <%= option[:icon] %> <%= option[:name] %>
+                  </span>
+                </label>
+              <% end %>
+            </div>
+          </div>
+        </div>
+
+        <!-- Boutons d'action pour les filtres -->
+        <div class="filters-actions">
+          <%= f.submit "Apply filters", class: "filters-apply-button" %>
+          <%= link_to "Reset", search_path, class: "filters-reset-button" %>
+        </div>
+      </div>
     <% end %>
   </div>
 
   <% if @query.present? %>
     <div class="mb-6 bg-gray-50 p-4 rounded-lg border border-gray-200">
       <h2 class="text-xl font-semibold text-gray-700">Results for "<span class="text-blue-600"><%= @query %></span>"</h2>
+      <% if @selected_content_types != ['texts', 'versions', 'files'] %>
+        <p class="text-sm text-gray-500 mt-1">
+          Showing: 
+          <% @selected_content_types.each_with_index do |type, index| %>
+            <%= @content_type_options.find { |opt| opt[:id] == type }[:icon] %> 
+            <%= @content_type_options.find { |opt| opt[:id] == type }[:name] %><%= index < @selected_content_types.length - 1 ? ', ' : '' %>
+          <% end %>
+        </p>
+      <% end %>
     </div>
     
-    <% if @texts.any? || @versions.any? %>
-      <% if @texts.any? %>
+    <% if (@texts.any? && @selected_content_types.include?('texts')) || (@versions.any? && @selected_content_types.include?('versions')) || (@files.any? && @selected_content_types.include?('files')) %>
+      <% if @texts.any? && @selected_content_types.include?('texts') %>
         <div class="mb-8">
           <h3 class="text-lg font-medium text-gray-700 mb-3 flex items-center">
             <span class="mr-2">Texts</span>
@@ -49,7 +143,7 @@
         </div>
       <% end %>
       
-      <% if @versions.any? %>
+      <% if @versions.any? && @selected_content_types.include?('versions') %>
         <div class="mb-8">
           <h3 class="text-lg font-medium text-gray-700 mb-3 flex items-center">
             <span class="mr-2">Versions</span>
@@ -82,7 +176,7 @@
           </div>
         </div>
       <% end %>
-      <% if @files.any? %>
+      <% if @files.any? && @selected_content_types.include?('files') %>
         <div class="mb-8">
           <h3 class="text-lg font-medium text-gray-700 mb-3 flex items-center">
             <span class="mr-2">Files</span>
@@ -124,3 +218,302 @@
     <% end %>
   <% end %>
 </div>
+
+<style>
+/* ===== STYLES POUR LA BARRE DE FILTRES ===== */
+
+/* Bouton toggle des filtres */
+.filters-toggle-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  margin-bottom: 1rem;
+}
+
+.filters-toggle-button:hover {
+  background-color: #2563eb;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Icône chevron dans le bouton toggle */
+.filters-toggle-chevron {
+  transition: transform 0.2s ease-in-out;
+  width: 1rem;
+  height: 1rem;
+}
+
+/* Section des filtres */
+.filters-section {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  transition: all 0.3s ease-in-out;
+}
+
+.filters-section.hidden {
+  display: none;
+}
+
+/* Grid pour organiser les groupes de filtres */
+.filters-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Groupe de filtres */
+.filter-group h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.75rem;
+  border-bottom: 2px solid #3b82f6;
+  padding-bottom: 0.25rem;
+}
+
+/* Container des pills */
+.filter-pills-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+/* Pill filter */
+.pill-filter {
+  display: inline-block;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.pill-filter:hover {
+  transform: translateY(-1px);
+}
+
+/* Contenu de la pill */
+.pill-content {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  background-color: #f3f4f6;
+  color: #4b5563;
+  transition: all 0.2s ease-in-out;
+}
+
+/* Checkbox caché */
+.pill-checkbox {
+  display: none;
+}
+
+/* États des pills */
+.pill-filter.active .pill-content {
+  background-color: #3b82f6;
+  color: white;
+  border-color: #3b82f6;
+}
+
+/* Style spécial pour les pills de types de contenu */
+.pill-filter[data-category="content-type"] .pill-content {
+  font-weight: 600;
+  border-width: 2px;
+}
+
+.pill-filter[data-category="content-type"].active .pill-content {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Actions des filtres */
+.filters-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  align-items: center;
+  padding-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.filters-apply-button {
+  padding: 0.5rem 1.5rem;
+  background-color: #10b981;
+  color: white;
+  border: none;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.filters-apply-button:hover {
+  background-color: #059669;
+  transform: translateY(-1px);
+}
+
+.filters-reset-button {
+  padding: 0.5rem 1.5rem;
+  background-color: transparent;
+  color: #6b7280;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.filters-reset-button:hover {
+  background-color: #f9fafb;
+  border-color: #9ca3af;
+}
+</style>
+
+<script>
+(function() {
+  'use strict';
+  
+  function initSearchFilters() {
+    // Trouver les éléments
+    const toggleButton = document.getElementById('toggleFilters');
+    const filtersSection = document.getElementById('filtersSection');
+    const filterText = document.getElementById('filterText');
+    const chevronDown = document.getElementById('chevronDown');
+    
+    if (!toggleButton || !filtersSection) {
+      return;
+    }
+    
+    // Nettoyer les anciens listeners pour éviter les doublons
+    const newToggleButton = toggleButton.cloneNode(true);
+    toggleButton.parentNode.replaceChild(newToggleButton, toggleButton);
+    
+    // Configuration initiale
+    const hasActiveFilters = filtersSection.getAttribute('data-has-active-filters') === 'true';
+    
+    if (hasActiveFilters) {
+      filtersSection.style.display = 'block';
+      if (filterText) filterText.textContent = 'Hide Filters';
+      if (chevronDown) chevronDown.style.transform = 'rotate(180deg)';
+    } else {
+      filtersSection.style.display = 'none';
+      if (filterText) filterText.textContent = 'Show Filters';
+      if (chevronDown) chevronDown.style.transform = 'rotate(0deg)';
+    }
+    
+    // Event listener pour le toggle
+    newToggleButton.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      
+      const isHidden = filtersSection.style.display === 'none';
+      
+      if (isHidden) {
+        filtersSection.style.display = 'block';
+        if (filterText) filterText.textContent = 'Hide Filters';
+        if (chevronDown) chevronDown.style.transform = 'rotate(180deg)';
+      } else {
+        filtersSection.style.display = 'none';
+        if (filterText) filterText.textContent = 'Show Filters';
+        if (chevronDown) chevronDown.style.transform = 'rotate(0deg)';
+      }
+    });
+    
+    // Configuration des pills
+    setupPillFilters();
+  }
+  
+  function setupPillFilters() {
+    const pillFilters = document.querySelectorAll('.pill-filter');
+    
+    const colors = [
+      '#3B82F6', '#A855F7', '#EC4899', '#6366F1', '#14B8A6', 
+      '#F97316', '#EF4444', '#10B981', '#06B6D4', '#8B5CF6'
+    ];
+    
+    // Couleurs spéciales pour les types de contenu
+    const contentTypeColors = {
+      'texts': '#1E40AF',      // blue-800
+      'versions': '#059669',   // emerald-600 
+      'files': '#7C3AED'       // violet-600
+    };
+    
+    pillFilters.forEach((pill, index) => {
+      const checkbox = pill.querySelector('.pill-checkbox');
+      const content = pill.querySelector('.pill-content');
+      
+      if (!checkbox || !content) return;
+      
+      // Déterminer la couleur selon le type de pill
+      let color;
+      const category = pill.getAttribute('data-category');
+      
+      if (category === 'content-type') {
+        // Pour les types de contenu, utiliser une couleur basée sur la valeur
+        const contentType = checkbox.value;
+        color = contentTypeColors[contentType] || colors[0];
+      } else {
+        // Pour les autres pills, utiliser la palette normale
+        color = colors[index % colors.length];
+      }
+      
+      // Nettoyer les anciens listeners
+      const newPill = pill.cloneNode(true);
+      pill.parentNode.replaceChild(newPill, pill);
+      
+      const newCheckbox = newPill.querySelector('.pill-checkbox');
+      const newContent = newPill.querySelector('.pill-content');
+      
+      function updatePill() {
+        if (newCheckbox.checked) {
+          newContent.style.backgroundColor = color;
+          newContent.style.color = '#FFFFFF';
+          newContent.style.borderColor = color;
+        } else {
+          newContent.style.backgroundColor = '#f3f4f6';
+          newContent.style.color = '#4b5563';
+          newContent.style.borderColor = '#e5e7eb';
+        }
+      }
+      
+      updatePill();
+      
+      newPill.addEventListener('click', function(e) {
+        e.preventDefault();
+        newCheckbox.checked = !newCheckbox.checked;
+        updatePill();
+      });
+    });
+  }
+  
+  // Initialisation multiple pour gérer différents cas
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initSearchFilters);
+  } else {
+    initSearchFilters();
+  }
+  
+  // Pour Turbo
+  document.addEventListener('turbo:load', initSearchFilters);
+  document.addEventListener('turbo:render', initSearchFilters);
+  
+  // Fallback avec timeout
+  setTimeout(initSearchFilters, 100);
+})();
+</script>
