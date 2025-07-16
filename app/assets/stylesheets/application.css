@@ -15,3 +15,14 @@
 
 /* Import des styles personnalisés */
 @import "filters.css";
+
+@font-face {
+  font-family: "DDC Uchen";
+  src: url("../fonts/DDCUchenRegular.ttf");
+}
+
+.text-tibetan {
+  font-family: "DDC Uchen";
+  font-size: 24px;
+  line-height: 56px;
+}
