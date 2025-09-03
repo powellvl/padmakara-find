@@ -1,0 +1,17 @@
+<!-- Filtre par Types de Contenu -->
+<div class="filter-group">
+  <h4>Content Types</h4>
+  <div class="filter-pills-container">
+    <% @content_type_options.each do |option| %>
+      <label class="pill-filter" data-category="content-type">
+        <%= check_box_tag "content_types[]", 
+            option[:id], 
+            @selected_content_types.include?(option[:id]),
+            class: "pill-checkbox" %>
+        <span class="pill-content">
+          <%= option[:icon] %> <%= option[:name] %>
+        </span>
+      </label>
+    <% end %>
+  </div>
+</div>

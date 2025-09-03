@@ -7,6 +7,287 @@
   margin-bottom: 1.5rem;
 }
 
+/* ===== STYLES POUR LA PAGE DE RECHERCHE ===== */
+
+/* Container principal de la page de recherche */
+.search-page-container {
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+/* En-tête de la recherche */
+.search-header {
+  margin-bottom: 2rem;
+}
+
+.search-title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0;
+}
+
+/* Section du formulaire de recherche */
+.search-form-section {
+  margin-bottom: 2rem;
+}
+
+.search-form {
+  width: 100%;
+}
+
+/* Container de la barre de recherche */
+.search-input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.search-icon {
+  position: absolute;
+  top: 50%;
+  left: 0.75rem;
+  transform: translateY(-50%);
+  pointer-events: none;
+  z-index: 10;
+}
+
+.search-input {
+  padding: 0.75rem 1rem 0.75rem 2.5rem;
+  width: 100%;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  outline: none;
+  transition: all 0.2s ease-in-out;
+}
+
+.search-input:focus {
+  box-shadow: 0 0 0 2px #3b82f6;
+  border-color: #3b82f6;
+}
+
+.search-button {
+  margin-left: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.search-button:hover {
+  background-color: #2563eb;
+}
+
+/* Section des résultats de recherche */
+.search-results-section {
+  margin-top: 2rem;
+}
+
+.search-results-header {
+  margin-bottom: 1.5rem;
+  background-color: #f9fafb;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid #e5e7eb;
+}
+
+.search-results-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #374151;
+  margin: 0 0 0.25rem 0;
+}
+
+.search-query-highlight {
+  color: #3b82f6;
+}
+
+.search-results-subtitle {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+/* Container des résultats */
+.search-results-content {
+  margin-top: 1rem;
+}
+
+/* Section de résultats (textes, versions, fichiers) */
+.results-section {
+  margin-bottom: 2rem;
+}
+
+.results-section-title {
+  font-size: 1.125rem;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+}
+
+.results-count {
+  padding: 0.125rem 0.5rem;
+  font-size: 0.75rem;
+  border-radius: 9999px;
+  font-weight: 600;
+}
+
+.results-count--texts {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.results-count--versions {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.results-count--files {
+  background-color: #e0e7ff;
+  color: #3730a3;
+}
+
+/* Grille des résultats */
+.results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+/* Cartes de résultats */
+.result-card {
+  background: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5e7eb;
+  transition: all 0.2s ease-in-out;
+}
+
+.result-card:hover {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.result-card-content {
+  padding: 1rem;
+}
+
+.result-card-meta {
+  margin-bottom: 0.5rem;
+}
+
+.result-card-meta-tag {
+  display: inline-block;
+  background-color: #f3f4f6;
+  color: #6b7280;
+  padding: 0.125rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+}
+
+.result-card-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 0.5rem 0;
+}
+
+.result-card-description {
+  color: #6b7280;
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
+.result-card-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.result-card-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.2s ease-in-out;
+}
+
+.result-card-button--texts {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.result-card-button--texts:hover {
+  background-color: #2563eb;
+}
+
+.result-card-button--versions {
+  background-color: #10b981;
+  color: white;
+}
+
+.result-card-button--versions:hover {
+  background-color: #059669;
+}
+
+.result-card-button--files {
+  background-color: #8b5cf6;
+  color: white;
+}
+
+.result-card-button--files:hover {
+  background-color: #7c3aed;
+}
+
+.result-card-icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* Message "Aucun résultat" */
+.no-results-container {
+  background-color: #fef3cd;
+  border-left: 4px solid #f59e0b;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  border-radius: 0.375rem;
+}
+
+.no-results-content {
+  display: flex;
+  align-items: center;
+}
+
+.no-results-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: #d97706;
+  margin-right: 0.75rem;
+  flex-shrink: 0;
+}
+
+.no-results-text {
+  color: #92400e;
+  margin: 0;
+}
+
+.no-results-query {
+  font-weight: 500;
+}
+
 /* Bouton toggle des filtres */
 .filters-toggle-button {
   display: inline-flex;

@@ -1,0 +1,30 @@
+<!-- Résultats : Fichiers -->
+<div class="results-section">
+  <h3 class="results-section-title">
+    <span class="mr-2">Files</span>
+    <span class="results-count results-count--files"><%= @files.count %></span>
+  </h3>
+  <div class="results-grid">
+    <% @files.each do |file| %>
+      <div class="result-card result-card--file">
+        <div class="result-card-content">
+          <div class="result-card-meta">
+            <span class="result-card-meta-tag">
+              Size: <%= number_to_human_size(file.byte_size) %>
+            </span>
+          </div>
+          <h5 class="result-card-title"><%= file.filename %></h5>
+          <div class="result-card-actions">
+            <%= link_to rails_blob_path(file, disposition: "attachment"), 
+                class: "result-card-button result-card-button--files" do %>
+              Download
+              <svg xmlns="http://www.w3.org/2000/svg" class="result-card-icon" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

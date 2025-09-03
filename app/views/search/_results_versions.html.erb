@@ -1,0 +1,33 @@
+<!-- Résultats : Versions -->
+<div class="results-section">
+  <h3 class="results-section-title">
+    <span class="mr-2">Versions</span>
+    <span class="results-count results-count--versions"><%= @versions.count %></span>
+  </h3>
+  <div class="results-grid">
+    <% @versions.each do |version| %>
+      <div class="result-card result-card--version">
+        <div class="result-card-content">
+          <div class="result-card-meta">
+            <span class="result-card-meta-tag">
+              Translation: <%= version.translation.language.name %>
+            </span>
+          </div>
+          <h5 class="result-card-title"><%= version.title %></h5>
+          <% if version.subtitle %>
+            <p class="result-card-description"><%= truncate(version.subtitle, length: 100) %></p>
+          <% end %>
+          <div class="result-card-actions">
+            <%= link_to text_translation_version_path(version.translation.text, version.translation, version), 
+                class: "result-card-button result-card-button--versions" do %>
+              See
+              <svg xmlns="http://www.w3.org/2000/svg" class="result-card-icon" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

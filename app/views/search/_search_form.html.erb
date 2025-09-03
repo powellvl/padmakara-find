@@ -1,0 +1,47 @@
+<!-- Formulaire de recherche et filtres -->
+<section class="search-form-section">
+  <%= form_with url: search_path, method: :get, local: true, class: "search-form" do |f| %>
+    <!-- Barre de recherche -->
+    <div class="search-input-container">
+      <div class="search-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+        </svg>
+      </div>
+      <%= f.text_field :query, 
+          value: @query, 
+          placeholder: "Find more...", 
+          class: "search-input" %>
+      <%= f.submit "Rechercher", class: "search-button" %>
+    </div>
+
+    <!-- Bouton pour afficher/masquer les filtres -->
+    <button type="button" id="toggleFilters" class="filters-toggle-button">
+      <svg id="filterIcon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+      </svg>
+      <span id="filterText">Show Filters</span>
+      <svg id="chevronDown" class="filters-toggle-chevron" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+      </svg>
+    </button>
+
+    <!-- Section des filtres -->
+    <div id="filtersSection" 
+      lass="filters-section" 
+      data-has-active-filters="<%= (@selected_school_ids.any? || @selected_deity_ids.any? || @selected_tag_ids.any? || @selected_content_types != ['texts', 'versions', 'files']) ? 'true' : 'false' %>">
+      <div class="filters-grid">
+        <%= render 'filter_schools', form: f %>
+        <%= render 'filter_deities', form: f %>
+        <%= render 'filter_tags', form: f %>
+        <%= render 'filter_content_types', form: f %>
+      </div>
+
+      <!-- Boutons d'action pour les filtres -->
+      <div class="filters-actions">
+        <%= f.submit "Apply filters", class: "apply-filters-button" %>
+        <%= link_to "Reset", search_path, class: "clear-filters-button" %>
+      </div>
+    </div>
+  <% end %>
+</section>

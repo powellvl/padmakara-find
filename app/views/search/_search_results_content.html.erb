@@ -1,0 +1,14 @@
+<!-- Contenu des résultats de recherche -->
+<div class="search-results-content">
+  <% if (@texts.any? && @selected_content_types.include?('texts')) || 
+       (@versions.any? && @selected_content_types.include?('versions')) || 
+       (@files.any? && @selected_content_types.include?('files')) %>
+    
+    <%= render 'results_texts' if @texts.any? && @selected_content_types.include?('texts') %>
+    <%= render 'results_versions' if @versions.any? && @selected_content_types.include?('versions') %>
+    <%= render 'results_files' if @files.any? && @selected_content_types.include?('files') %>
+    
+  <% else %>
+    <%= render 'no_results' %>
+  <% end %>
+</div>

@@ -2,6 +2,7 @@
 import "@hotwired/turbo-rails";
 import "controllers";
 import TomSelect from "tom-select";
+import "search";
 
 document.addEventListener("turbo:load", function () {
   document.querySelectorAll(".tomselect").forEach((element) => {

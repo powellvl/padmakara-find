@@ -12,3 +12,4 @@ pin_all_from "app/javascript/controllers", under: "controllers"
 
 # Pin des assets JavaScript personnalisés
 pin "filters", to: "filters.js"
+pin "search", to: "search.js"

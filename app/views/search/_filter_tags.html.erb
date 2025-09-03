@@ -1,0 +1,14 @@
+<!-- Filtre par Tags -->
+<div class="filter-group">
+  <h4>Tags</h4>
+  <div class="filter-pills-container">
+    <%= form.collection_check_boxes :tag_ids, @tags, :id, :name, { checked: @selected_tag_ids } do |b| %>
+      <label class="pill-filter" data-category="tag">
+        <%= b.check_box(class: "pill-checkbox") %>
+        <span class="pill-content">
+          <%= b.text %>
+        </span>
+      </label>
+    <% end %>
+  </div>
+</div>

@@ -1,0 +1,7 @@
+<!-- Résultats de recherche -->
+<section class="search-results-section">
+  <% if @query.present? %>
+    <%= render 'search_results_header' %>
+    <%= render 'search_results_content' %>
+  <% end %>
+</section>

@@ -1,0 +1,14 @@
+<!-- Filtre par Schools -->
+<div class="filter-group">
+  <h4>Schools</h4>
+  <div class="filter-pills-container">
+    <%= form.collection_check_boxes :school_ids, @schools, :id, :name, { checked: @selected_school_ids } do |b| %>
+      <label class="pill-filter" data-category="school">
+        <%= b.check_box(class: "pill-checkbox") %>
+        <span class="pill-content">
+          <%= b.text %>
+        </span>
+      </label>
+    <% end %>
+  </div>
+</div>

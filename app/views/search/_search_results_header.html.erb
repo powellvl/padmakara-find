@@ -1,0 +1,15 @@
+<!-- En-tête des résultats de recherche -->
+<div class="search-results-header">
+  <h2 class="search-results-title">
+    Results for "<span class="search-query-highlight"><%= @query %></span>"
+  </h2>
+  <% if @selected_content_types != ['texts', 'versions', 'files'] %>
+    <p class="search-results-subtitle">
+      Showing: 
+      <% @selected_content_types.each_with_index do |type, index| %>
+        <%= @content_type_options.find { |opt| opt[:id] == type }[:icon] %> 
+        <%= @content_type_options.find { |opt| opt[:id] == type }[:name] %><%= index < @selected_content_types.length - 1 ? ', ' : '' %>
+      <% end %>
+    </p>
+  <% end %>
+</div>
