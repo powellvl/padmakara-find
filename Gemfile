@@ -71,6 +71,6 @@ group :test do
   gem "capybara-playwright-driver"
 end
 
-gem "tailwindcss-rails", "~> 3.2"
+gem "tailwindcss-rails", "~> 4.2"
 
 gem "image_processing", ">= 1.2"
