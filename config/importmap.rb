@@ -18,3 +18,4 @@ pin "tibetan-to-phonetics", to: "https://cdn.jsdelivr.net/npm/tibetan-to-phoneti
 pin "tibetan-normalizer", to: "https://cdn.jsdelivr.net/npm/tibetan-normalizer@0.2.0/dist/tibetan-normalizer.esm.js"
 pin "tibetan-syllable-parser", to: "https://cdn.jsdelivr.net/npm/tibetan-syllable-parser@1.2.0/lib/esm/index.js"
 pin "tibetan-unicode-converter", to: "https://cdn.jsdelivr.net/npm/tibetan-unicode-converter@1.0.0/lib/esm/index.js"
+pin "tibetan-ewts-converter", to: "https://cdn.jsdelivr.net/npm/tibetan-ewts-converter@1.0.1/src/EwtsConverter.mjs"

@@ -1,10 +1,13 @@
 import { Controller } from "@hotwired/stimulus";
 
+import { EwtsConverter } from "tibetan-ewts-converter";
+let ewts = new EwtsConverter();
+
 import { TibetanToPhonetics } from "tibetan-to-phonetics";
 import { TibetanUnicodeConverter } from "tibetan-unicode-converter";
 
 export default class extends Controller {
-  static targets = ["tibetanInput", "phoneticsInput"];
+  static targets = ["tibetanInput", "phoneticsInput", "wylieInput"];
 
   connect() {
     var phonetics = new TibetanToPhonetics({
@@ -14,6 +17,12 @@ export default class extends Controller {
     const updatePhonetics = (tibetan) => {
       if (this.hasPhoneticsInputTarget && this.phoneticsInputTarget) {
         this.phoneticsInputTarget.value = phonetics.convert(tibetan);
+      }
+    };
+
+    const updateWylie = (tibetan) => {
+      if (this.hasWylieInputTarget && this.wylieInputTarget) {
+        this.wylieInputTarget.value = ewts.to_ewts(tibetan);
       }
     };
 
@@ -32,12 +41,14 @@ export default class extends Controller {
       } else {
         event.target.value = pastedText;
       }
+      updateWylie(event.target.value);
       updatePhonetics(event.target.value);
     });
 
     // When #text_title_tibetan changes, automatically update #text_title_phonetics
     // with the generated phonetics of the tibetan text
     this.tibetanInputTarget.addEventListener("input", () => {
+      updateWylie(this.tibetanInputTarget.value);
       updatePhonetics(this.tibetanInputTarget.value);
     });
   }
