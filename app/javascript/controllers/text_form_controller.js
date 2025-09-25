@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus";
 
 import { TibetanToPhonetics } from "tibetan-to-phonetics";
-import TibetanUnicodeConverter from "tibetan-unicode-converter";
+import { TibetanUnicodeConverter } from "tibetan-unicode-converter";
 
 export default class extends Controller {
   static targets = ["tibetanInput", "phoneticsInput"];
