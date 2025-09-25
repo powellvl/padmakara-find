@@ -31,18 +31,34 @@ export default class extends Controller {
     this.tibetanInputTarget.addEventListener("paste", (event) => {
       event.preventDefault();
       const pastedText = event.clipboardData.getData("text");
+      const input = event.target;
+      const start = input.selectionStart;
+      const end = input.selectionEnd;
+      const currentValue = input.value;
+
+      // Determine the text to insert based on whether it contains Tibetan characters
+      let textToInsert;
       if (
         pastedText.match(
           /^[^\u{f00}-\u{fda}\u{f021}-\u{f042}\u{f162}-\u{f588}]*$/u
         )
       ) {
         const converter = new TibetanUnicodeConverter(pastedText);
-        event.target.value = converter.convert();
+        textToInsert = converter.convert();
       } else {
-        event.target.value = pastedText;
+        textToInsert = pastedText;
       }
-      updateWylie(event.target.value);
-      updatePhonetics(event.target.value);
+
+      // Insert the text at the cursor position
+      const newValue = currentValue.slice(0, start) + textToInsert + currentValue.slice(end);
+      input.value = newValue;
+
+      // Update cursor position to be after the inserted text
+      const newCursorPosition = start + textToInsert.length;
+      input.setSelectionRange(newCursorPosition, newCursorPosition);
+
+      updateWylie(input.value);
+      updatePhonetics(input.value);
     });
 
     // When #text_title_tibetan changes, automatically update #text_title_phonetics
