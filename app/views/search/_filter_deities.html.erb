@@ -3,7 +3,9 @@
   <h4>Deities</h4>
   <div class="filter-pills-container">
     <%= form.collection_check_boxes :deity_ids, @deities, :id, :name_english, { checked: @selected_deity_ids } do |b| %>
-      <label class="pill-filter" data-category="deity">
+      <label class="pill-filter" 
+             data-category="deity"
+             data-action="click->search#togglePill">
         <%= b.check_box(class: "pill-checkbox") %>
         <span class="pill-content">
           <%= b.text %>

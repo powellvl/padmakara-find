@@ -1,5 +1,7 @@
 <!-- Formulaire de recherche et filtres -->
-<section class="search-form-section">
+<section class="search-form-section" 
+         data-controller="search"
+         data-search-has-active-filters-value="<%= (@selected_school_ids.any? || @selected_deity_ids.any? || @selected_tag_ids.any? || @selected_content_types != ['texts', 'versions', 'files']).to_s %>">
   <%= form_with url: search_path, method: :get, local: true, class: "search-form" do |f| %>
     <!-- Barre de recherche -->
     <div class="search-input-container">
@@ -16,20 +18,22 @@
     </div>
 
     <!-- Bouton pour afficher/masquer les filtres -->
-    <button type="button" id="toggleFilters" class="filters-toggle-button">
+    <button type="button" 
+            class="filters-toggle-button"
+            data-search-target="toggleButton"
+            data-action="click->search#toggleFilters">
       <svg id="filterIcon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
       </svg>
-      <span id="filterText">Show Filters</span>
-      <svg id="chevronDown" class="filters-toggle-chevron" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <span data-search-target="filterText">Show Filters</span>
+      <svg data-search-target="chevronDown" class="filters-toggle-chevron" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
       </svg>
     </button>
 
     <!-- Section des filtres -->
-    <div id="filtersSection" 
-      lass="filters-section" 
-      data-has-active-filters="<%= (@selected_school_ids.any? || @selected_deity_ids.any? || @selected_tag_ids.any? || @selected_content_types != ['texts', 'versions', 'files']) ? 'true' : 'false' %>">
+    <div class="filters-section" 
+         data-search-target="filtersSection">
       <div class="filters-grid">
         <%= render 'filter_schools', form: f %>
         <%= render 'filter_deities', form: f %>

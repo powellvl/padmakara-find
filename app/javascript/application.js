@@ -2,20 +2,25 @@
 import "@hotwired/turbo-rails";
 import "controllers";
 import TomSelect from "tom-select";
-import "search";
 
 import "filters";
 
 document.addEventListener("turbo:load", function () {
+  // TomSelect pour les select multiples
   document.querySelectorAll(".tomselect").forEach((element) => {
     new TomSelect(element, {
       plugins: ["remove_button"],
       maxItems: null,
     });
   });
-  document
-    .querySelector("#user-menu-button")
-    .addEventListener("click", function () {
-      document.querySelector("#user-menu").classList.toggle("hidden");
+
+  // Menu utilisateur
+  const userMenuButton = document.querySelector("#user-menu-button");
+  const userMenu = document.querySelector("#user-menu");
+
+  if (userMenuButton && userMenu) {
+    userMenuButton.addEventListener("click", function () {
+      userMenu.classList.toggle("hidden");
     });
+  }
 });

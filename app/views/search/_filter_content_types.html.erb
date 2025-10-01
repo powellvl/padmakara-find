@@ -3,7 +3,9 @@
   <h4>Content Types</h4>
   <div class="filter-pills-container">
     <% @content_type_options.each do |option| %>
-      <label class="pill-filter" data-category="content-type">
+      <label class="pill-filter" 
+             data-category="content-type"
+             data-action="click->search#togglePill">
         <%= check_box_tag "content_types[]", 
             option[:id], 
             @selected_content_types.include?(option[:id]),
