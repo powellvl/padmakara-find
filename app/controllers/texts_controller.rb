@@ -33,33 +33,106 @@ class TextsController < ApplicationController
 
   # GET /texts/new
   def new
-    @text = Text.new
+    @text_service = TextCreationService.new
+    @authors = Author.all.order(:name_english)
+    @schools = School.all.order(:name)
+    @deities = Deity.all.order(:name_english)
+    @tags = Tag.all.order(:name)
+
+    # Ordre spécifique des langues : tibétain, anglais, français, espagnol, portugais, allemand
+    language_order = [ "tibetan", "english", "french", "spanish", "portuguese", "german" ]
+    all_languages = Language.all
+    @languages = all_languages.sort_by do |language|
+      name_lower = language.name.downcase
+      order_index = language_order.find_index { |lang| name_lower.include?(lang) }
+      order_index || 999 # Mettre les langues non trouvées à la fin
+    end
+
     add_breadcrumb("New Text", new_text_path)
   end
 
   # GET /texts/1/edit
   def edit
+    # Initialiser le service d'édition avec le texte existant
+    @text_service = TextCreationService.new.tap do |service|
+      service.text = @text
+      service.title_tibetan = @text.title_tibetan
+      service.title_wylie = @text.title_wylie
+      service.title_phonetics = @text.title_phonetics
+      service.notes = @text.notes
+      service.author_ids = @text.author_ids
+      service.school_ids = @text.school_ids
+      service.deity_ids = @text.deity_ids
+      service.tag_ids = @text.tag_ids
+    end
+
+    # Charger les données pour les formulaires
+    @authors = Author.all.order(:name_english)
+    @schools = School.all.order(:name)
+    @deities = Deity.all.order(:name_english)
+    @tags = Tag.all.order(:name)
+
+    # Ordre spécifique des langues
+    language_order = [ "tibetan", "english", "french", "spanish", "portuguese", "german" ]
+    all_languages = Language.all
+    @languages = all_languages.sort_by do |language|
+      name_lower = language.name.downcase
+      order_index = language_order.find_index { |lang| name_lower.include?(lang) }
+      order_index || 999
+    end
+
     add_breadcrumb("Edit", edit_text_path(@text))
   end
 
   # POST /texts or /texts.json
   def create
-    @text = Text.new(text_params)
+    @text_service = TextCreationService.new(text_service_params)
 
-    if @text.save
-      redirect_to texts_path, notice: "Text was successfully created."
+    if @text_service.call
+      redirect_to text_translations_path(@text_service.text),
+                  notice: "Text was successfully created with #{@text_service.text.translations.count} translation(s)."
     else
+      @authors = Author.all.order(:name)
+      @schools = School.all.order(:name)
+      @deities = Deity.all.order(:name_english)
+      @tags = Tag.all.order(:name)
+      @languages = Language.all.order(:name)
       render :new, status: :unprocessable_entity
     end
   end
 
   # PATCH/PUT /texts/1 or /texts/1.json
   def update
+    if params[:text_creation_service]
+      # Mise à jour via le service de création (formulaire complexe)
+      @text_service = TextCreationService.new(text_service_params.merge(text: @text))
+
+      if @text_service.update
+        redirect_to text_translations_path(@text), notice: "Text was successfully updated."
+      else
+        @authors = Author.all.order(:name_english)
+        @schools = School.all.order(:name)
+        @deities = Deity.all.order(:name_english)
+        @tags = Tag.all.order(:name)
+
+        language_order = [ "tibetan", "english", "french", "spanish", "portuguese", "german" ]
+        all_languages = Language.all
+        @languages = all_languages.sort_by do |language|
+          name_lower = language.name.downcase
+          order_index = language_order.find_index { |lang| name_lower.include?(lang) }
+          order_index || 999
+        end
+
+        render :edit, status: :unprocessable_entity
+      end
+    else
+      # Mise à jour simple (au cas où)
       if @text.update(text_params)
         redirect_to texts_path, notice: "Text was successfully updated."
       else
         render :edit, status: :unprocessable_entity
       end
+    end
   end
 
   # DELETE /texts/1 or /texts/1.json
@@ -77,5 +150,19 @@ class TextsController < ApplicationController
     # Only allow a list of trusted parameters through.
     def text_params
       params.require(:text).permit(:title_tibetan, :title_wylie, :title_phonetics, :notes, deity_ids: [], school_ids: [], tag_ids: [], author_ids: [])
+    end
+
+    def text_service_params
+      params.require(:text_creation_service).permit(
+        :title_tibetan, :title_wylie, :title_phonetics, :notes,
+        author_ids: [], deity_ids: [], school_ids: [], tag_ids: [],
+        direct_files: [],
+        translations_attributes: {}
+      ).tap do |permitted_params|
+        # Permettre les attributs imbriqués pour les traductions
+        if params[:text_creation_service][:translations_attributes]
+          permitted_params[:translations_attributes] = params[:text_creation_service][:translations_attributes].permit!
+        end
+      end
     end
 end

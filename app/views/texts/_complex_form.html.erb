@@ -1,0 +1,310 @@
+
+
+
+<div class="text-creation-container" 
+     data-controller="text-creation"
+     data-text-creation-translation-index-value="0"
+     data-text-creation-version-counters-value="{}">
+  <% 
+    # Déterminer l'URL et la méthode selon le contexte (creation/edition)
+    form_url = @text_service.text&.persisted? ? text_path(@text_service.text) : texts_path
+    form_method = @text_service.text&.persisted? ? :patch : :post
+  %>
+  <%= form_with(model: @text_service, url: form_url, method: form_method, local: true, 
+                multipart: true, 
+                html: { class: "text-creation-form", id: "text-creation-form" }, 
+                data: { text_creation_target: "form" }) do |form| %>
+    
+    <!-- Messages d'erreur -->
+    <% if @text_service&.errors&.any? %>
+      <div class="error-container">
+        <h2><%= pluralize(@text_service.errors.count, "error") %> prohibited this text from being saved:</h2>
+        <ul>
+          <% @text_service.errors.each do |error| %>
+            <li><%= error.full_message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <!-- Layout principal en 2 colonnes -->
+    <div class="text-creation-layout">
+      <!-- Section principale du texte -->
+      <section class="text-main-section">
+        <h2>📝 Informations du texte</h2>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <%= form.label :title_tibetan, "Titre tibétain", class: "form-label" %>
+            <%= form.text_field :title_tibetan, 
+                class: "form-input", 
+                placeholder: "སྒྲོལ་མ་མཆོད་པ།",
+                "data-text-creation-target": "tibetanInput" %>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <%= form.label :title_phonetics, "Titre phonétique", class: "form-label" %>
+            <%= form.text_field :title_phonetics, 
+                class: "form-input", 
+                placeholder: "Exemple: Tara Puja",
+                "data-text-creation-target": "phoneticsInput" %>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <%= form.label :title_wylie, "Titre wylie", class: "form-label" %>
+            <%= form.text_field :title_wylie, 
+                class: "form-input", 
+                placeholder: "sgrol ma mchod pa",
+                "data-text-creation-target": "wylieInput" %>
+          </div>
+        </div>        <div class="associations-row">
+          <div class="form-group">
+            <%= form.label :author_ids, "Auteur", class: "form-label" %>
+            <%= form.collection_select :author_ids, @authors, :id, :name_english, 
+                  { prompt: "Sélectionner un auteur" }, 
+                  { class: "form-select tomselect", multiple: true } %>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <%= form.label :notes, "Notes", class: "form-label" %>
+            <%= form.text_area :notes, class: "form-textarea", placeholder: "Notes supplémentaires sur ce texte..." %>
+          </div>
+        </div>
+
+        <!-- Upload de fichiers directement sur le texte -->
+        <div class="file-upload-section">
+          <h3>📁 Fichiers du texte</h3>
+          <div class="file-drop-zone" id="text-files-dropzone">
+            <%= form.file_field :direct_files, multiple: true, class: "file-input", 
+                                accept: ".pdf,.doc,.docx,.txt", 
+                                id: "text_direct_files" %>
+            <div class="drop-zone-content">
+              <div class="drop-zone-default">
+                <div class="drop-zone-icon">📁</div>
+                <p>Glissez vos fichiers ici</p>
+                <button type="button" class="initial-select-btn" onclick="document.getElementById('text_direct_files').click()">
+                  📎 Sélectionner des fichiers
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section des traductions -->
+      <section class="translations-section">
+        <h2>🌐 Traductions & Versions</h2>
+        
+        <div id="translations-container" data-text-creation-target="translationsContainer">
+          <!-- Créer automatiquement une traduction pour chaque langue dans l'ordre spécifié -->
+          <% 
+            # Ordre spécifique des langues : tibétain, anglais, français, espagnol, portugais, allemand
+            language_order = ['tibetan', 'english', 'french', 'spanish', 'portuguese', 'german']
+            
+            # Trier les langues selon l'ordre spécifié
+            sorted_languages = @languages.sort_by do |language|
+              # Chercher dans le nom de la langue (insensible à la casse)
+              name_lower = language.name.downcase
+              order_index = language_order.find_index { |lang| name_lower.include?(lang) }
+              order_index || 999 # Mettre les langues non trouvées à la fin
+            end
+          %>
+          
+          <% sorted_languages.each_with_index do |language, index| %>
+            <div class="translation-item" data-index="<%= index + 1 %>" data-language-id="<%= language.id %>">
+              <div class="translation-header">
+                <h3 class="translation-title">
+                  <span class="language-flag"><%= language_flag(language.name) %></span>
+                  <%= language.name %>
+                </h3>
+                <button type="button" class="remove-translation-btn" style="display: none;">×</button>
+              </div>
+              
+              <div class="translation-content">
+                <div class="form-row-2cols">
+                  <!-- Champ langue caché -->
+                  <input type="hidden" name="text_creation_service[translations_attributes][<%= index + 1 %>][language_id]" value="<%= language.id %>">
+                  
+                  <div class="form-group">
+                    <label class="form-label">Fichiers de traduction</label>
+                    <div class="file-drop-zone translation-files-dropzone">
+                      <input type="file" name="text_creation_service[translations_attributes][<%= index + 1 %>][files][]" 
+                             multiple class="file-input" accept=".pdf,.doc,.docx,.txt">
+                      <div class="drop-zone-content">
+                        <div class="drop-zone-default">
+                          <div class="drop-zone-icon">📄</div>
+                          <p>Fichiers de traduction</p>
+                          <button type="button" class="initial-select-btn-small" onclick="this.parentElement.parentElement.parentElement.querySelector('.file-input').click()">
+                            + Fichiers
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Section des versions -->
+                <div class="versions-section">
+                  <div class="versions-header">
+                    <h4 class="versions-title">Versions</h4>
+                    <button type="button" class="add-version-btn" data-action="click->text-creation#addVersion">+ Version</button>
+                  </div>
+                  
+                  <div class="versions-container">
+                    <!-- Version par défaut -->
+                    <div class="version-item" data-version-index="1">
+                      <div class="version-content">
+                        <div class="version-info-row">
+                          <div class="form-group">
+                            <label class="form-label">Titre</label>
+                            <input type="text" name="text_creation_service[translations_attributes][<%= index + 1 %>][versions_attributes][1][title]" 
+                                   class="form-input version-title-input" 
+                                   placeholder="Titre de la version">
+                          </div>
+                          
+                          <div class="form-group">
+                            <label class="form-label">Nom</label>
+                            <input type="text" name="text_creation_service[translations_attributes][<%= index + 1 %>][versions_attributes][1][name]" 
+                                   class="form-input version-name-input" 
+                                   placeholder="Nom de la version">
+                          </div>
+                        </div>
+
+                        <!-- Zone de fichiers pour la version -->
+                        <div class="version-files-section">
+                          <label class="form-label">Fichiers de cette version</label>
+                          <div class="file-drop-zone version-files-dropzone">
+                            <input type="file" name="text_creation_service[translations_attributes][<%= index + 1 %>][versions_attributes][1][files][]" 
+                                   multiple class="file-input version-files-input" 
+                                   accept=".pdf,.doc,.docx,.txt">
+                            <div class="drop-zone-content">
+                              <div class="drop-zone-default">
+                                <div class="drop-zone-icon">🎯</div>
+                                <p>Fichiers version</p>
+                                <button type="button" class="initial-select-btn-small" onclick="this.parentElement.parentElement.parentElement.querySelector('.version-files-input').click()">
+                                  + Fichiers
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </section>
+    </div>
+
+    <!-- Boutons de soumission -->
+    <div class="form-actions">
+      <%= form.submit "Créer le texte", class: "submit-btn", data: { text_creation_target: "submitBtn" } %>
+      <%= link_to "Annuler", texts_path, class: "cancel-btn" %>
+    </div>
+
+  <% end %>
+</div>
+
+<!-- Datalist pour l'autocomplétion des tags -->
+<datalist id="tags-datalist">
+  <% @tags.each do |tag| %>
+    <option value="<%= tag.name %>">
+  <% end %>
+</datalist>
+
+<!-- Template pour une nouvelle traduction -->
+<template id="translation-template" data-text-creation-target="translationTemplate">
+  <div class="translation-item" data-index="">
+    <div class="translation-header">
+      <h3 class="translation-title"></h3>
+      <button type="button" class="remove-translation-btn" data-action="click->text-creation#removeTranslation">×</button>
+    </div>
+    
+    <div class="translation-content">
+      <div class="form-row-2cols">
+        <div class="form-group">
+          <label class="form-label">Langue</label>
+          <select name="text_creation_service[translations_attributes][][language_id]" class="form-select language-select" data-action="change->text-creation#updateTranslationTitle">
+            <option value="">Sélectionner une langue</option>
+            <% @languages.each do |language| %>
+              <option value="<%= language.id %>"><%= language.name %></option>
+            <% end %>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Fichiers de traduction</label>
+          <div class="file-drop-zone translation-files-dropzone">
+            <input type="file" name="text_creation_service[translations_attributes][][files][]" 
+                   multiple class="file-input" accept=".pdf,.doc,.docx,.txt">
+            <div class="drop-zone-content">
+              <div class="drop-zone-default">
+                <div class="drop-zone-icon">📄</div>
+                <p>Fichiers</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section des versions -->
+      <div class="versions-section">
+        <div class="versions-header">
+          <h4 class="versions-title">Versions</h4>
+          <button type="button" class="add-version-btn" data-action="click->text-creation#addVersion">+ Version</button>
+        </div>
+        
+        <div class="versions-container">
+          <!-- Les versions seront ajoutées ici -->
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<!-- Template pour une nouvelle version -->
+<template id="version-template" data-text-creation-target="versionTemplate">
+  <div class="version-item" data-version-index="">
+    <div class="version-content">
+      <div class="version-info-row">
+        <div class="form-group">
+          <label class="form-label">Titre</label>
+          <input type="text" name="" class="form-input version-title-input" 
+                 placeholder="Titre de la version">
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Nom</label>
+          <input type="text" name="" class="form-input version-name-input" 
+                 placeholder="Nom de la version">
+        </div>
+      </div>
+
+      <!-- Zone de fichiers pour la version -->
+      <div class="version-files-section">
+        <label class="form-label">Fichiers de cette version</label>
+        <div class="file-drop-zone version-files-dropzone">
+          <input type="file" name="" multiple class="file-input version-files-input" 
+                 accept=".pdf,.doc,.docx,.txt">
+          <div class="drop-zone-content">
+            <div class="drop-zone-default">
+              <div class="drop-zone-icon">🎯</div>
+              <p>Fichiers version</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <button type="button" class="remove-version-btn" data-action="click->text-creation#removeVersion">Supprimer cette version</button>
+    </div>
+  </div>
+</template>

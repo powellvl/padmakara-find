@@ -3,8 +3,6 @@ import "@hotwired/turbo-rails";
 import "controllers";
 import TomSelect from "tom-select";
 
-import "filters";
-
 document.addEventListener("turbo:load", function () {
   // TomSelect pour les select multiples
   document.querySelectorAll(".tomselect").forEach((element) => {

@@ -49,4 +49,23 @@ module ApplicationHelper
       </svg>'
     end
   end
+
+  def language_flag(language_name)
+    case language_name.downcase
+    when /tibetan/
+      "🇹🇧"  # Drapeau tibétain (approximatif)
+    when /english/
+      "🇺🇸"  # Drapeau américain pour l'anglais
+    when /french/
+      "🇫🇷"  # Drapeau français
+    when /spanish/
+      "🇪🇸"  # Drapeau espagnol
+    when /portuguese/
+      "🇵🇹"  # Drapeau portugais
+    when /german/
+      "🇩🇪"  # Drapeau allemand
+    else
+      "🏳️"   # Drapeau blanc par défaut
+    end
+  end
 end

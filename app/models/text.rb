@@ -1,5 +1,7 @@
 class Text < ApplicationRecord
   has_many :translations, dependent: :destroy
+  has_many_attached :files
+
   validates :title_tibetan, presence: true
   has_and_belongs_to_many :authors
   has_and_belongs_to_many :deities
