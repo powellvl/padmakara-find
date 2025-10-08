@@ -1,67 +1,122 @@
 <p style="color: green"><%= notice %></p>
 
 <% content_for :title, "Translations" %>
+<% content_for :head do %>
+  <%= stylesheet_link_tag 'translations', 'data-turbo-track': 'reload' %>
+  <%= stylesheet_link_tag 'text_files', 'data-turbo-track': 'reload' %>
+<% end %>
 
 <div class="container mx-auto px-4 py-8">
-  <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
-    <div class="text-center md:text-left mb-4 md:mb-0">
-      <h1 class="text-4xl font-bold text-gray-800 mb-2">Traductions</h1>
-      <p class="text-xl text-gray-600 italic"><%= @text.title_phonetics %></p>
-      <div class="w-24 h-1 mx-auto md:mx-0 my-4 bg-blue-500 rounded"></div>
-    </div>
-    
-    <%= link_to new_text_translation_path(@text), class: "self-center md:self-start inline-flex items-center px-6 py-3 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200" do %>
-      <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-      </svg>
-      Nouvelle traduction
-    <% end %>
+  
+  <!-- Section des fichiers du texte -->
+  <div data-text-id="<%= @text.id %>">
+    <%= render "text_files" %>
   </div>
 
-  <% if @translations.empty? %>
-    <div class="text-center py-10">
-      <svg class="mx-auto h-16 w-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+  <!-- Section des traductions -->
+  <div class="mb-6">
+    <h2 class="text-2xl font-bold text-gray-900 mb-4 flex items-center">
+      <svg class="h-6 w-6 text-gray-700 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path>
       </svg>
-      <p class="mt-2 text-lg text-gray-500">Aucune traduction disponible</p>
-    </div>
-  <% else %>
+      Traductions disponibles
+      <span class="ml-2 bg-blue-100 text-blue-800 text-sm font-medium px-2 py-1 rounded-full">
+        <%= @translations.count %>
+      </span>
+    </h2>
+  </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-3 gap-10">
-      <% @translations.each do |translation| %>
-        <div class="relative bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-blue-300 group cursor-pointer"
-          onclick="window.location.href='<%= url_for([@text, translation, :versions]) %>'">
-          
-
-          
-
-          <div class="bg-gray-50 border-solid border-2 w-20 h-20 rounded-full p-5 mr-3 absolute -top-10 -right-10 z-9 flex items-center justify-center">
-            <p class="text-xl font-semibold text-gray-900">
-                <%= language_code(translation).upcase %>
-            </p>
-          </div>
-          <div class="overflow-hidden w-100 h-100">
-            <%= render translation %>
-          </div>
-          
-          <div class="p-6">
-            <div class="space-y-2">
+  <!-- Grille des traductions avec carte d'ajout -->
+  <div class="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-3 gap-10">
+    
+    <!-- Carte d'ajout de nouvelle traduction -->
+    <%= link_to new_text_translation_path(@text), 
+        class: "group block" do %>
+      <div class="add-translation-card shine-effect relative bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 border-2 border-dashed border-gray-300 hover:border-blue-400 cursor-pointer h-full min-h-[350px] flex flex-col items-center justify-center hover:scale-[1.02]">
+        
+        <!-- Icône + avec effet de pulsation -->
+        <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:bg-blue-50 mb-4">
+          <svg class="pulse-icon w-10 h-10 text-gray-400 group-hover:text-blue-500 transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+          </svg>
+        </div>
+        
+        <!-- Texte -->
+        <div class="text-center px-6">
+          <h3 class="text-lg font-semibold text-gray-700 group-hover:text-blue-600 transition-colors duration-300 mb-2">
+            Nouvelle traduction
+          </h3>
+          <p class="text-sm text-gray-500 group-hover:text-gray-600 transition-colors duration-300">
+            Ajouter une traduction dans une nouvelle langue
+          </p>
+        </div>
+        
+        
+      </div>
+    <% end %>
+    
+    <!-- Traductions existantes -->
+    <% @translations.each do |translation| %>
+      <div class="translation-card shine-effect relative rounded-2xl group cursor-pointer min-h-[350px] flex flex-col"
+        onclick="window.location.href='<%= url_for([@text, translation, :versions]) %>'">
+        
+        <!-- Badge langue amélioré -->
+        <div class="language-badge w-16 h-16 rounded-full flex items-center justify-center">
+          <p class="text-lg font-bold text-gray-800">
+              <%= language_code(translation).upcase %>
+          </p>
+        </div>
+        
+        <!-- Contenu de la traduction -->
+        <div class="translation-content flex-1">
+          <%= render translation %>
+        </div>
+        
+        <!-- Footer avec statut -->
+        <div class="translation-footer">
+          <div class="flex items-center justify-between">
+            <div class="flex flex-wrap gap-2">
               <% if translation.latest_published_version %>
-                <div class="mt-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                  Version publiée disponible
+                <div class="status-badge inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
+                  <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                  </svg>
+                  Publiée
                 </div>
               <% else %>
-                <div class="mt-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                  Aucune version publiée
+                <div class="status-badge inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
+                  <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                  </svg>
+                  Brouillon
                 </div>
               <% end %>
             </div>
             
-            
-            
+            <!-- Flèche d'indication -->
+            <div class="text-gray-400 group-hover:text-blue-500 transition-colors duration-300">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+              </svg>
+            </div>
           </div>
         </div>
-      <% end %>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Message si aucune traduction (mais on garde la carte d'ajout visible) -->
+  <% if @translations.empty? %>
+    <div class="text-center py-8 mt-8">
+      <div class="bg-blue-50 rounded-lg p-6 border border-blue-200">
+        <svg class="mx-auto h-12 w-12 text-blue-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        <h3 class="text-lg font-medium text-blue-800 mb-2">Première traduction</h3>
+        <p class="text-blue-600">
+          Commencez par ajouter votre première traduction en cliquant sur la carte ci-dessus.
+        </p>
+      </div>
     </div>
   <% end %>
 </div>

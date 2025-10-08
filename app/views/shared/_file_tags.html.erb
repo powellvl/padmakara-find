@@ -1,0 +1,39 @@
+<!-- Composant réutilisable pour la gestion des tags de fichiers -->
+<div class="flex flex-wrap gap-1 mt-1" data-file-tags-target="container" data-file-id="<%= file.id %>">
+  <!-- Tags existants -->
+  <% if file.tags.any? %>
+    <% file.tags.each do |tag| %>
+      <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-700 hover:bg-blue-200 transition-colors cursor-pointer group"
+            data-tag-id="<%= tag.id %>"
+            title="Cliquer pour retirer">
+        #<%= tag.name %>
+        <% if Current.user&.admin? %>
+          <button type="button" 
+                  class="ml-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                  data-action="click->file-tags#removeTag"
+                  data-file-id="<%= file.id %>"
+                  data-tag-id="<%= tag.id %>">
+            <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        <% end %>
+      </span>
+    <% end %>
+  <% end %>
+  
+  <!-- Bouton d'ajout de tag -->
+  <% if Current.user&.admin? %>
+    <button type="button" 
+            class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
+            data-action="click->file-tags#showTagSelector"
+            data-file-id="<%= file.id %>"
+            data-file-type="<%= file.class.name %>"
+            title="Ajouter un tag">
+      <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+      </svg>
+      <span class="ml-1">Tag</span>
+    </button>
+  <% end %>
+</div>

@@ -1,0 +1,113 @@
+/* Styles pour le drag & drop des fichiers */
+
+/* Indicateurs de drop pour les fichiers */
+.drop-target-above {
+  border-top: 2px solid #3b82f6;
+  background-color: #dbeafe;
+}
+
+.drop-target-below {
+  border-bottom: 2px solid #3b82f6;
+  background-color: #dbeafe;
+}
+
+/* Element en cours de drag */
+.dragging {
+  opacity: 0.5 !important;
+  transform: rotate(2deg);
+  transition: all 0.2s ease;
+}
+
+/* Curseur pour les fichiers draggables */
+[draggable="true"] {
+  cursor: move;
+}
+
+[draggable="true"]:hover {
+  background-color: #f9fafb;
+}
+
+/* Animation pour les tags */
+.file-tag {
+  transition: all 0.2s ease;
+}
+
+.file-tag:hover {
+  transform: scale(1.05);
+}
+
+/* Modal styles */
+.modal-backdrop {
+  backdrop-filter: blur(4px);
+}
+
+/* Styles pour les checkboxes dans la modal */
+.tag-checkbox-container:hover {
+  background-color: #f3f4f6;
+}
+
+/* Animation pour l'ajout/suppression de tags */
+.tag-appear {
+  animation: tagAppear 0.3s ease-out;
+}
+
+.tag-disappear {
+  animation: tagDisappear 0.3s ease-out forwards;
+}
+
+@keyframes tagAppear {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes tagDisappear {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+}
+
+/* Amélioration de l'apparence de la zone de drag */
+.file-drag-zone {
+  transition: all 0.2s ease;
+}
+
+.file-drag-active {
+  background-color: #eff6ff;
+  border-color: #3b82f6;
+}
+
+/* Styles pour les tags de fichiers */
+.file-tag-button {
+  transition: all 0.2s ease;
+}
+
+.file-tag-button:hover {
+  transform: scale(1.05);
+}
+
+/* Animation pour l'apparition des nouveaux tags */
+.new-tag-animation {
+  animation: slideInTag 0.3s ease-out;
+}
+
+@keyframes slideInTag {
+  from {
+    opacity: 0;
+    transform: translateX(-10px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}

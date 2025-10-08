@@ -63,6 +63,74 @@ class VersionsController < ApplicationController
                 notice: "Version was successfully destroyed."
   end
 
+  # POST /texts/1/translations/2/versions/3/files/123/add_tags
+  def add_file_tags
+    file_attachment = @version.files.find(params[:file_id])
+
+    if file_attachment && params[:tag_ids].present?
+      begin
+        tags_to_add = Tag.where(id: params[:tag_ids])
+
+        # Ajouter les tags qui ne sont pas déjà associés
+        tags_to_add.each do |tag|
+          unless file_attachment.tags.include?(tag)
+            file_attachment.tags << tag
+          end
+        end
+
+        render json: {
+          status: "success",
+          message: "Tags ajoutés avec succès",
+          tags: tags_to_add.map { |tag| { id: tag.id, name: tag.name } }
+        }
+      rescue => e
+        render json: {
+          status: "error",
+          message: "Erreur lors de l'ajout des tags: #{e.message}"
+        }, status: :unprocessable_entity
+      end
+    else
+      render json: {
+        status: "error",
+        message: "Fichier ou tags non trouvés"
+      }, status: :unprocessable_entity
+    end
+  end
+
+  # DELETE /texts/1/translations/2/versions/3/files/123/remove_tag/456
+  def remove_file_tag
+    file_attachment = @version.files.find(params[:file_id])
+
+    if file_attachment
+      begin
+        tag = Tag.find(params[:tag_id])
+
+        # Supprimer la relation entre le fichier et le tag
+        file_attachment.tags.delete(tag)
+
+        render json: {
+          status: "success",
+          message: "Tag supprimé avec succès"
+        }
+      rescue ActiveRecord::RecordNotFound
+        render json: {
+          status: "error",
+          message: "Tag non trouvé"
+        }, status: :not_found
+      rescue => e
+        render json: {
+          status: "error",
+          message: "Erreur lors de la suppression du tag: #{e.message}"
+        }, status: :unprocessable_entity
+      end
+    else
+      render json: {
+        status: "error",
+        message: "Fichier non trouvé"
+      }, status: :not_found
+    end
+  end
+
   private
     def set_text_and_breadcrumb
       @text = Text.find(params[:text_id])

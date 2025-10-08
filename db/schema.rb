@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_10_175950) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_06_000001) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -105,6 +105,18 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_10_175950) do
     t.index ["user_id"], name: "index_sessions_on_user_id"
   end
 
+  create_table "taggings", force: :cascade do |t|
+    t.integer "tag_id", null: false
+    t.string "taggable_type", null: false
+    t.integer "taggable_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["tag_id", "taggable_type", "taggable_id"], name: "index_taggings_on_tag_id_and_taggable_type_and_taggable_id", unique: true
+    t.index ["tag_id"], name: "index_taggings_on_tag_id"
+    t.index ["taggable_type", "taggable_id"], name: "index_taggings_on_taggable"
+    t.index ["taggable_type", "taggable_id"], name: "index_taggings_on_taggable_type_and_taggable_id"
+  end
+
   create_table "tags", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", null: false
@@ -170,6 +182,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_10_175950) do
   add_foreign_key "schools_texts", "schools", on_delete: :cascade
   add_foreign_key "schools_texts", "texts", on_delete: :cascade
   add_foreign_key "sessions", "users"
+  add_foreign_key "taggings", "tags"
   add_foreign_key "tags_texts", "tags", on_delete: :cascade
   add_foreign_key "tags_texts", "texts", on_delete: :cascade
   add_foreign_key "translations", "languages"

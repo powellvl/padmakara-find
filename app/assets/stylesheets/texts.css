@@ -1,0 +1,117 @@
+/* Styles pour la page des textes avec animations modernes */
+
+/* Animation douce pour les cartes de texte */
+.text-card {
+  background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid #e2e8f0;
+  position: relative;
+  will-change: transform, box-shadow;
+}
+
+.text-card:hover {
+  transform: translateY(-3px) scale(1.015);
+  background: linear-gradient(145deg, #ffffff 0%, #f1f5f9 100%);
+  border-color: #3b82f6;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08), 0 5px 15px rgba(0, 0, 0, 0.04);
+  z-index: 5;
+}
+
+/* Effet de brillance sur les cartes */
+.text-card.shine-effect {
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.text-card.shine-effect::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent 30%,
+    rgba(21, 117, 226, 0.049) 50%,
+    transparent 70%
+  );
+  transform: rotate(45deg);
+  transition: all 0.6s ease;
+  opacity: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.text-card.shine-effect:hover::after {
+  opacity: 1;
+  transform: rotate(45deg) translate(30%, 30%);
+}
+
+/* Contenu de la carte */
+.text-card .text-content {
+  position: relative;
+  z-index: 3;
+}
+
+/* Animation pour la couverture */
+.text-cover-container {
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.text-card:hover .text-cover-container {
+  transform: scale(1.02);
+}
+
+/* Styles pour les badges et tags */
+.text-status-badge {
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.2s ease;
+}
+
+.text-status-badge:hover {
+  transform: scale(1.05);
+}
+
+/* Animation subtile pour les métadonnées */
+.text-metadata {
+  transition: all 0.2s ease;
+}
+
+.text-card:hover .text-metadata {
+  color: rgb(50 90 204);
+}
+
+/* Effet de pulsation douce pour les éléments interactifs */
+.text-interactive {
+  animation: subtle-pulse 3s ease-in-out infinite;
+}
+
+@keyframes subtle-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.9;
+  }
+}
+
+/* Styles pour les titres avec animation */
+.text-title {
+  transition: all 0.3s ease;
+}
+
+.text-card:hover .text-title {
+  color: rgb(29 78 216);
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .text-card:hover {
+    transform: translateY(-2px) scale(1.01);
+  }
+}

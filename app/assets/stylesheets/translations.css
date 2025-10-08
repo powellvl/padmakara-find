@@ -1,0 +1,266 @@
+/* Styles pour la page des traductions */
+
+/* Animation douce pour les cartes - Les styles principaux sont définis plus bas */
+
+/* Carte d'ajout avec effet de respirateur */
+.add-translation-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.add-translation-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    45deg,
+    transparent 30%,
+    rgba(59, 130, 246, 0.1) 50%,
+    transparent 70%
+  );
+  transform: translateX(-100%);
+  transition: transform 0.6s ease;
+}
+
+.add-translation-card:hover::before {
+  transform: translateX(100%);
+}
+
+/* Badge animé - uniquement pour la carte d'ajout */
+.add-translation-card .floating-badge {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Animation float uniquement pour les éléments spécifiques */
+@keyframes float {
+  0%,
+  100% {
+    transform: rotate(12deg) translateY(0px);
+  }
+  50% {
+    transform: rotate(6deg) translateY(-3px);
+  }
+}
+
+/* Désactiver l'animation float sur les cartes de traduction */
+.translation-card .floating-badge {
+  animation: none;
+}
+
+/* Effet de pulsation sur l'icône + */
+.pulse-icon {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+/* Amélioration des badges de statut */
+.status-badge {
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Effet de brillance sur les cartes */
+.shine-effect {
+  position: relative;
+  overflow: hidden;
+  /* Assurer que le contexte de stacking fonctionne correctement */
+  z-index: 1;
+}
+
+.shine-effect::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.08) 50%,
+    transparent 70%
+  );
+  transform: rotate(45deg);
+  transition: all 0.6s ease;
+  opacity: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.shine-effect:hover::after {
+  opacity: 1;
+  transform: rotate(45deg) translate(30%, 30%);
+}
+
+/* Badge de langue amélioré avec positioning fixe */
+.language-badge {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  border: 2px solid #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 10;
+  /* Arrêter la propagation de l'animation float */
+  animation: none;
+}
+
+.translation-card:hover .language-badge {
+  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+  border-color: #60a5fa;
+  transform: scale(1.05) rotate(-2deg);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.3);
+}
+
+/* Amélioration de la carte de traduction */
+.translation-card {
+  background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid #e2e8f0;
+  position: relative;
+  /* Éviter les conflits de transform avec les animations globales */
+  will-change: transform, box-shadow;
+}
+
+.translation-card:hover {
+  transform: translateY(-3px) scale(1.015);
+  background: linear-gradient(145deg, #ffffff 0%, #f1f5f9 100%);
+  border-color: #3b82f6;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08), 0 5px 15px rgba(0, 0, 0, 0.04);
+  z-index: 5;
+}
+
+/* Contenu de la traduction avec padding amélioré */
+.translation-content {
+  padding: 1.5rem;
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* Footer de la carte */
+.translation-footer {
+  border-top: 1px solid #f1f5f9;
+  background: linear-gradient(
+    to bottom,
+    rgba(248, 250, 252, 0.5),
+    rgba(241, 245, 249, 0.8)
+  );
+  padding: 1rem 1.5rem;
+  margin-top: auto;
+}
+
+/* Badge + décoratif pour la carte d'ajout */
+.add-badge {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  animation: float 3s ease-in-out infinite;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+}
+
+/* Corrections pour éviter les conflits de hover */
+.translation-card:hover .add-badge {
+  animation-play-state: paused;
+}
+
+/* Assurer une meilleure séparation des couches */
+.translation-card .translation-content {
+  position: relative;
+  z-index: 3;
+}
+
+.translation-card .translation-footer {
+  position: relative;
+  z-index: 3;
+}
+
+/* Styles pour l'en-tête des détails du texte */
+.text-details-header {
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.text-details-header:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Animation subtile pour les tags */
+.text-details-header .bg-purple-100,
+.text-details-header .bg-blue-100,
+.text-details-header .bg-green-100,
+.text-details-header .bg-orange-100 {
+  transition: all 0.2s ease;
+}
+
+.text-details-header .bg-purple-100:hover {
+  background-color: rgb(237 233 254);
+  transform: scale(1.05);
+}
+
+.text-details-header .bg-blue-100:hover {
+  background-color: rgb(219 234 254);
+  transform: scale(1.05);
+}
+
+.text-details-header .bg-green-100:hover {
+  background-color: rgb(220 252 231);
+  transform: scale(1.05);
+}
+
+.text-details-header .bg-orange-100:hover {
+  background-color: rgb(254 235 200);
+  transform: scale(1.05);
+}
+
+/* Style tibétain amélioré */
+.text-details-header h1 {
+  font-family: "DDC Uchen", serif;
+  line-height: 1.2;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+/* Effet de brillance sur la barre de progression */
+.text-details-header .h-1 {
+  position: relative;
+  overflow: hidden;
+}
+
+.text-details-header .h-1::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  animation: shine 3s infinite;
+}
+
+@keyframes shine {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}

@@ -7,7 +7,11 @@ Rails.application.routes.draw do
     resources :languages
     resources :deities
     resources :schools
-    resources :tags
+    resources :tags do
+      collection do
+        get :available, defaults: { format: :json }
+      end
+    end
     resources :authors
   end
   resources :languages
@@ -15,12 +19,21 @@ Rails.application.routes.draw do
   resource :session
   resources :passwords, param: :token
   resources :texts do
+    member do
+      post :upload_files
+      delete "delete_file/:file_id", to: "texts#delete_file", as: :delete_file
+      post :reorder_files
+      post "files/:file_id/add_tags", to: "texts#add_file_tags", as: :add_file_tags
+      delete "files/:file_id/remove_tag/:tag_id", to: "texts#remove_file_tag", as: :remove_file_tag
+    end
     resources :translations do
       resources :versions do
         member do
           post :generate_cover
           delete :remove_cover
           get :edit_files
+          post "files/:file_id/add_tags", to: "versions#add_file_tags", as: :add_file_tags
+          delete "files/:file_id/remove_tag/:tag_id", to: "versions#remove_file_tag", as: :remove_file_tag
         end
       end
     end

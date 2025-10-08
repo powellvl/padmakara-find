@@ -4,6 +4,16 @@ class Admin::TagsController < Admin::BaseController
   def index
     @tags = Tag.all
     add_breadcrumb "Tags", admin_tags_path
+
+    respond_to do |format|
+      format.html
+      format.json { render json: @tags.select(:id, :name) }
+    end
+  end
+
+  def available
+    @tags = Tag.all.order(:name)
+    render json: @tags.select(:id, :name)
   end
 
   def show

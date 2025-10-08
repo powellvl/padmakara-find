@@ -7,6 +7,7 @@ class TranslationsController < ApplicationController
   def index
     @text = Text.find(params[:text_id])
     @translations = @text.translations
+    @available_tags = Tag.all.order(:name) # Pour la modal de sélection des tags
   end
 
   # GET /translations/new
