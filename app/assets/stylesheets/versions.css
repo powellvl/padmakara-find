@@ -1,0 +1,140 @@
+@layer components {
+  /* Version Cards - Modern glassmorphism design matching translation cards */
+  .version-card {
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.9) 0%,
+      rgba(255, 255, 255, 0.8) 100%
+    );
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .version-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    border-color: rgba(255, 255, 255, 0.5);
+  }
+
+  .version-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.8) 50%,
+      transparent 100%
+    );
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .version-card:hover::before {
+    opacity: 1;
+  }
+
+  /* Animation de brillance pour les cartes de version */
+  @keyframes shine {
+    0% {
+      transform: translateX(-100%) translateY(-100%) rotate(30deg);
+    }
+    100% {
+      transform: translateX(100%) translateY(100%) rotate(30deg);
+    }
+  }
+
+  .animate-shine {
+    animation: shine 0.6s ease-out;
+  }
+
+  /* Grille responsive pour les cartes de version */
+  .version-card-grid {
+    gap: 1.5rem;
+  }
+
+  @media (max-width: 768px) {
+    .version-card-grid {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+
+    .version-card:hover {
+      transform: translateY(-4px) scale(1.01);
+    }
+  }
+
+  /* Styles pour les badges dans les cartes de version */
+  .version-card .badge {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    transition: all 0.2s ease;
+  }
+
+  .version-card .badge:hover {
+    background: rgba(255, 255, 255, 0.9);
+    transform: translateY(-1px);
+  }
+
+  /* Amélioration des icônes dans les cartes de version */
+  .version-card svg {
+    transition: all 0.2s ease;
+  }
+
+  .version-card:hover svg {
+    transform: scale(1.05);
+  }
+
+  /* Styles pour les micro-interactions sur les fichiers */
+  .version-card .file-item {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .version-card .file-item:hover {
+    transform: translateX(2px);
+    background: rgba(255, 255, 255, 0.9);
+  }
+
+  /* Animation subtile pour l'apparition des cartes */
+  .version-card {
+    animation: fadeInUp 0.6s ease-out forwards;
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  .version-card:nth-child(1) {
+    animation-delay: 0.1s;
+  }
+  .version-card:nth-child(2) {
+    animation-delay: 0.2s;
+  }
+  .version-card:nth-child(3) {
+    animation-delay: 0.3s;
+  }
+  .version-card:nth-child(4) {
+    animation-delay: 0.4s;
+  }
+  .version-card:nth-child(5) {
+    animation-delay: 0.5s;
+  }
+  .version-card:nth-child(6) {
+    animation-delay: 0.6s;
+  }
+
+  @keyframes fadeInUp {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
