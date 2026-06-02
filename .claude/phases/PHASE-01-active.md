@@ -6,7 +6,7 @@ Scan the entire NAS read-only and produce a browsable inventory of every file, i
 
 ## Tasks
 - [ ] Establish the Postgres foundation (supersedes the old SQLite default — see DECISIONS.md, "PostgreSQL over SQLite"): switch `config/database.yml` to PostgreSQL, run Postgres as a Kamal accessory, enable the `pg_trgm` and `pgvector` extensions. Keep the Solid* (cache/queue/cable) stack working.
-- [ ] Mount the NAS read-only on the server; make the root path(s) configurable. The app must never write to the NAS in this phase.
+- [ ] Make the source root path(s) configurable via env/config. In development it points to a **local folder** seeded with sample files; on the on-prem server it points to the **real NAS mount** (set up later). The app must never write to this root in this phase (read-only access).
 - [ ] Model the content-addressed inventory: one record per unique content (keyed on checksum) with size, content_type, and triage state; a separate location record (path, mtime, last_seen_at) so the same content can exist at many paths.
 - [ ] Replace the assumption that files are Active Storage attachments: introduce the file-reference model that later phases and `Version` will link to. (Do not yet rip out the existing `has_many_attached :files` — that happens in Phase 03 when linking files to versions.)
 - [ ] Scanner background job (Solid Queue): walk the tree, stream-checksum each file (only re-hash when size/mtime changed), upsert content by checksum, upsert location by path, stamp last_seen_at. Idempotent and re-runnable.
