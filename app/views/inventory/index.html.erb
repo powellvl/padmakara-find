@@ -12,11 +12,33 @@
 
   <%# ── Summary cards ──────────────────────────────────────────────────── %>
   <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-    <%= render "stat_card", label: "Fichiers uniques",   value: number_with_delimiter(@total_unique_files) %>
+    <%= render "stat_card", label: "Fichiers uniques",    value: number_with_delimiter(@total_unique_files) %>
     <%= render "stat_card", label: "Emplacements actifs", value: number_with_delimiter(@total_active_locs) %>
     <%= render "stat_card", label: "Disparus",            value: number_with_delimiter(@total_missing_locs) %>
     <%= render "stat_card", label: "Volume total",        value: number_to_human_size(@total_bytes) %>
   </div>
+
+  <%# ── Extraction status ──────────────────────────────────────────────── %>
+  <% if @extraction_counts.any? %>
+    <section class="rounded-lg border border-gray-200 bg-white shadow-sm mb-8">
+      <h2 class="px-4 pt-4 pb-2 text-sm font-semibold text-gray-700 uppercase tracking-wide">
+        Statut d'extraction
+      </h2>
+      <div class="flex flex-wrap gap-3 px-4 pb-4">
+        <% status_colors = { "pending_extraction" => "bg-gray-100 text-gray-700",
+                             "extracted"           => "bg-green-100 text-green-800",
+                             "extraction_failed"   => "bg-red-100 text-red-800",
+                             "unsupported_format"  => "bg-yellow-100 text-yellow-800" } %>
+        <% CataloguedFile.extraction_statuses.each_key do |key| %>
+          <% count = @extraction_counts[key] || 0 %>
+          <span class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-medium
+                       <%= status_colors.fetch(key, 'bg-gray-100 text-gray-600') %>">
+            <%= key.humanize %> — <%= number_with_delimiter(count) %>
+          </span>
+        <% end %>
+      </div>
+    </section>
+  <% end %>
 
   <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
 

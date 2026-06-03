@@ -103,5 +103,14 @@ Architecture decisions for Padmakara-Find. Append-only. Do not edit past entries
 
 ---
 
+## 2026-06-03 — Full-text search uses PostgreSQL tsvector/pg_trgm; OCR and Tibetan search deferred
+**Chosen:** Full-text search over extracted text uses `tsvector` (stored column, updated after extraction) with a GIN index and `ts_rank` for ranking. Snippets via `ts_headline`. Fuzzy filename matching via `pg_trgm`. Text search config: `'simple'` (no language-specific stemming) to accommodate French, English, and future Tibetan in the same index. OCR (images, scanned PDFs) and Tibetan-specific search (Wylie/phonetic normalisation) are explicitly deferred.
+**Alternatives:** SQLite FTS5 (earlier decision, superseded); Elasticsearch/Meilisearch; separate search engine.
+**Why:** `tsvector`/`pg_trgm` are already enabled. `'simple'` config avoids wrong-language stemming on a multilingual corpus. OCR requires an external tool (Tesseract) and is a substantial sub-task; deferring it avoids blocking Phase 02. Tibetan requires server-side Wylie/phonetic converters — the existing converters are client-side JS; a server-side port is a separate spike.
+**Trade-offs:** `'simple'` config gives no stemming (searching "prière" won't find "prières" unless both are in the text). Acceptable for Phase 02; a `french`+`english` composite config can be added later. OCR files show `unsupported_format` for now.
+**Revisit if:** Search quality is poor due to lack of stemming; or Tibetan search becomes urgent.
+
+---
+
 ## Future direction (not a decision yet — recorded for foresight)
 A second-stage editorial platform is intended: line-by-line indexed texts aligned across Tibetan / French / English / Sanskrit, and semi-automatic prayer-booklet generation (select prayers, compile). Prototypes already exist. This is **out of scope** for the catalog work. It will hook in *below* the `Version` (a Version's content gets segmented into aligned lines). Keeping `Version` as the content anchor is enough to avoid foreclosing it; no further design is done now.

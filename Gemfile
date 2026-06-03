@@ -19,7 +19,8 @@ gem "turbo-rails"
 # Hotwire's modest JavaScript framework [https://stimulus.hotwired.dev]
 gem "stimulus-rails"
 
-gem "pdf-reader" # Pour lire les PDFs
+gem "pdf-reader"  # PDF text extraction (Phase 02)
+gem "rubyzip"     # docx text extraction — docx files are ZIP archives (Phase 02)
 
 gem "mini_magick" # Pour manipuler les images
 

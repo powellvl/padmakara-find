@@ -88,7 +88,8 @@ class NasScanner
     checksum     = Digest::SHA256.file(path_str).hexdigest
     content_type = content_type_for(path)
 
-    catalogued = CataloguedFile.find_or_initialize_by(sha256_checksum: checksum)
+    catalogued   = CataloguedFile.find_or_initialize_by(sha256_checksum: checksum)
+    is_new       = catalogued.new_record?
     catalogued.assign_attributes(
       byte_size:     stat.size,
       content_type:  content_type,
@@ -111,6 +112,11 @@ class NasScanner
         mtime:           stat.mtime,
         last_seen_at:    scan_start
       )
+    end
+
+    # Enqueue extraction for brand-new files or previously-failed ones.
+    if is_new || catalogued.extraction_failed?
+      ExtractTextJob.perform_later(catalogued.id)
     end
   end
 

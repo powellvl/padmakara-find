@@ -1,0 +1,40 @@
+<!-- Résultats : fichiers indexés depuis le NAS (Phase 02 full-text search) -->
+<div class="results-section">
+  <h3 class="results-section-title">
+    <span class="mr-2">Fichiers NAS</span>
+    <span class="results-count results-count--files"><%= @catalogued_files.size %></span>
+  </h3>
+  <div class="results-grid">
+    <% @catalogued_files.each do |cf| %>
+      <% loc = cf.active_locations.first %>
+      <div class="result-card result-card--file">
+        <div class="result-card-content">
+          <div class="result-card-meta">
+            <span class="result-card-meta-tag"><%= cf.content_type %></span>
+            <span class="result-card-meta-tag"><%= number_to_human_size(cf.byte_size) %></span>
+            <span class="result-card-meta-tag <%= cf.extraction_status %>">
+              <%= cf.extraction_status.humanize %>
+            </span>
+          </div>
+
+          <h5 class="result-card-title">
+            <%= loc ? File.basename(loc.path) : cf.sha256_checksum.first(12) %>
+          </h5>
+
+          <% if cf.try(:headline).present? %>
+            <p class="mt-1 text-sm text-gray-600 line-clamp-2">
+              <%# ts_headline returns HTML with <b> tags — mark it safe %>
+              <%= sanitize(cf.headline, tags: %w[b]) %>
+            </p>
+          <% end %>
+
+          <% if loc %>
+            <p class="mt-1 text-xs text-gray-400 truncate" title="<%= loc.path %>">
+              <%= loc.path %>
+            </p>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

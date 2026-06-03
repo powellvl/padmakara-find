@@ -1,13 +1,15 @@
 <!-- Contenu des résultats de recherche -->
 <div class="search-results-content">
-  <% if (@texts.any? && @selected_content_types.include?('texts')) || 
-       (@versions.any? && @selected_content_types.include?('versions')) || 
-       (@files.any? && @selected_content_types.include?('files')) %>
-    
+  <% has_results = (@texts.any? && @selected_content_types.include?('texts')) ||
+                   (@versions.any? && @selected_content_types.include?('versions')) ||
+                   (@files.any? && @selected_content_types.include?('files')) ||
+                   (@catalogued_files&.any? && @selected_content_types.include?('files')) %>
+
+  <% if has_results %>
     <%= render 'results_texts' if @texts.any? && @selected_content_types.include?('texts') %>
     <%= render 'results_versions' if @versions.any? && @selected_content_types.include?('versions') %>
     <%= render 'results_files' if @files.any? && @selected_content_types.include?('files') %>
-    
+    <%= render 'results_catalogued_files' if @catalogued_files&.any? && @selected_content_types.include?('files') %>
   <% else %>
     <%= render 'no_results' %>
   <% end %>

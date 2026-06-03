@@ -10,7 +10,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_06_000001) do
+ActiveRecord::Schema[8.0].define(version: 2026_06_03_100001) do
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "pg_catalog.plpgsql"
+  enable_extension "pg_trgm"
+  enable_extension "vector"
+
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -56,6 +61,26 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_06_000001) do
     t.index ["text_id"], name: "index_authors_texts_on_text_id"
   end
 
+  create_table "catalogued_files", force: :cascade do |t|
+    t.string "sha256_checksum", null: false
+    t.bigint "byte_size", null: false
+    t.string "content_type", default: "application/octet-stream", null: false
+    t.integer "triage_state", default: 0, null: false
+    t.datetime "first_seen_at", null: false
+    t.datetime "last_scan_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.text "extracted_text"
+    t.integer "extraction_status", default: 0, null: false
+    t.tsvector "content_tsvector"
+    t.index ["content_tsvector"], name: "index_catalogued_files_on_content_tsvector", using: :gin
+    t.index ["content_type"], name: "index_catalogued_files_on_content_type"
+    t.index ["extracted_text"], name: "index_catalogued_files_on_extracted_text_trgm", opclass: :gin_trgm_ops, using: :gin
+    t.index ["extraction_status"], name: "index_catalogued_files_on_extraction_status"
+    t.index ["sha256_checksum"], name: "index_catalogued_files_on_sha256_checksum", unique: true
+    t.index ["triage_state"], name: "index_catalogued_files_on_triage_state"
+  end
+
   create_table "deities", force: :cascade do |t|
     t.string "name_tibetan"
     t.string "name_sanskrit"
@@ -72,6 +97,20 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_06_000001) do
     t.index ["deity_id", "text_id"], name: "index_deities_texts_on_deity_id_and_text_id", unique: true
     t.index ["deity_id"], name: "index_deities_texts_on_deity_id"
     t.index ["text_id"], name: "index_deities_texts_on_text_id"
+  end
+
+  create_table "file_locations", force: :cascade do |t|
+    t.bigint "catalogued_file_id", null: false
+    t.text "path", null: false
+    t.datetime "mtime", null: false
+    t.datetime "last_seen_at", null: false
+    t.datetime "missing_since"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["catalogued_file_id"], name: "index_file_locations_on_catalogued_file_id"
+    t.index ["last_seen_at"], name: "index_file_locations_on_last_seen_at"
+    t.index ["missing_since"], name: "index_file_locations_on_missing_since"
+    t.index ["path"], name: "index_file_locations_on_path", unique: true
   end
 
   create_table "languages", force: :cascade do |t|
@@ -179,6 +218,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_06_000001) do
   add_foreign_key "authors_texts", "texts", on_delete: :cascade
   add_foreign_key "deities_texts", "deities", on_delete: :cascade
   add_foreign_key "deities_texts", "texts", on_delete: :cascade
+  add_foreign_key "file_locations", "catalogued_files"
   add_foreign_key "schools_texts", "schools", on_delete: :cascade
   add_foreign_key "schools_texts", "texts", on_delete: :cascade
   add_foreign_key "sessions", "users"

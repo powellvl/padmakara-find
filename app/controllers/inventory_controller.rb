@@ -23,6 +23,8 @@ class InventoryController < ApplicationController
     # with their locations in a separate query to avoid a PG GROUP BY conflict.
     duplicate_ids = CataloguedFile.with_multiple_active_locations.pluck(:id)
     @exact_duplicates = CataloguedFile.where(id: duplicate_ids).includes(:file_locations)
+
+    @extraction_counts = CataloguedFile.group(:extraction_status).count
   end
 
   def trigger_scan

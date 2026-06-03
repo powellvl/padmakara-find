@@ -21,9 +21,10 @@ class SearchController < ApplicationController
     @query = params[:query]
 
     # Initialiser les collections
-    @texts = []
-    @versions = []
-    @files = []
+    @texts             = []
+    @versions          = []
+    @files             = []
+    @catalogued_files  = []
 
     if @query.present?
       # Recherche dans les textes si sélectionné
@@ -42,6 +43,7 @@ class SearchController < ApplicationController
       if @selected_content_types.include?("files")
         @files = build_file_search_query(@query)
         @files = apply_filters_to_files(@files)
+        @catalogued_files = CataloguedFile.full_text_search(@query).limit(50)
       end
     else
       # Si pas de recherche mais filtres appliqués
