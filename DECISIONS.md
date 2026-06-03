@@ -85,5 +85,23 @@ Architecture decisions for Padmakara-Find. Append-only. Do not edit past entries
 
 ---
 
+## 2026-06-03 — NAS source root is configurable; dev uses a local sample tree
+**Chosen:** The scanner reads its root from `ENV["NAS_SOURCE_ROOT"]`, which defaults to `Rails.root/tmp/nas_sample` in development. The real NAS mount path is set only on the production server. The `NasSource` initializer exposes a single `NasSource.root` constant so the value is set once at boot and never changes mid-request.
+**Alternatives:** Hard-code the NAS path; use a Rails credential; use a database-stored setting.
+**Why:** Environment variables are the standard twelve-factor approach for infrastructure paths. Defaulting to a local sample tree lets development and CI work without a NAS mount. Keeping the constant in an initializer means models and services reference `NasSource.root` uniformly.
+**Trade-offs:** The root is frozen at boot; changing it requires a server restart. Acceptable for an on-prem deployment.
+**Revisit if:** Multiple source roots need to be scanned simultaneously (Phase 01 defers this).
+
+---
+
+## 2026-06-03 — Solid Queue / Cache / Cable remain on SQLite; only the primary DB moves to PostgreSQL
+**Chosen:** The three Solid* components (cache, queue, cable) keep their own SQLite databases. Only the primary application database moves to PostgreSQL. The multidb configuration in `database.yml` supports different adapters per named database.
+**Alternatives:** Move all databases to PostgreSQL.
+**Why:** Solid Queue, Cache, and Cable store transient operational data (job records, cache entries, websocket state). They have no migrations to port, no data to preserve, and their single-writer model fits SQLite perfectly. Moving them to PostgreSQL would add Kamal accessor config and connection overhead for zero benefit.
+**Trade-offs:** Two different database drivers must be installed and bundled (already the case: `pg` + `sqlite3`). Solid Queue's job records are not in the same DB as application data, so there is no single-transaction spanning both — accepted, since job enqueuing is already asynchronous.
+**Revisit if:** We need transactional outbox guarantees between app DB and job queue.
+
+---
+
 ## Future direction (not a decision yet — recorded for foresight)
 A second-stage editorial platform is intended: line-by-line indexed texts aligned across Tibetan / French / English / Sanskrit, and semi-automatic prayer-booklet generation (select prayers, compile). Prototypes already exist. This is **out of scope** for the catalog work. It will hook in *below* the `Version` (a Version's content gets segmented into aligned lines). Keeping `Version` as the content anchor is enough to avoid foreclosing it; no further design is done now.

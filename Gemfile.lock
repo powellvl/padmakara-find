@@ -223,6 +223,13 @@ GEM
     pdftoimage (0.2.1)
       iconv (~> 1.0)
       shellwords (~> 0.2.2)
+    pg (1.6.3)
+    pg (1.6.3-aarch64-linux)
+    pg (1.6.3-aarch64-linux-musl)
+    pg (1.6.3-arm64-darwin)
+    pg (1.6.3-x86_64-linux)
+    pg (1.6.3-x86_64-linux-musl)
+    pgvector (0.3.3)
     playwright-ruby-client (1.50.1)
       concurrent-ruby (>= 1.1.6)
       mime-types (>= 3.0)
@@ -425,6 +432,8 @@ DEPENDENCIES
   mini_magick
   pdf-reader
   pdftoimage
+  pg (~> 1.5)
+  pgvector (~> 0.2)
   propshaft
   puma (>= 5.0)
   rails (~> 8.0.1)

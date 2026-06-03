@@ -1,0 +1,93 @@
+<div class="max-w-5xl mx-auto px-4 py-8">
+  <div class="flex items-center justify-between mb-8">
+    <h1 class="text-2xl font-bold text-gray-900">Inventaire NAS</h1>
+    <%= button_to "Lancer un scan", trigger_scan_inventory_path,
+          method: :post,
+          class: "rounded bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700" %>
+  </div>
+
+  <% if notice %>
+    <p class="mb-4 rounded bg-green-50 border border-green-200 px-4 py-2 text-green-800 text-sm"><%= notice %></p>
+  <% end %>
+
+  <%# ── Summary cards ──────────────────────────────────────────────────── %>
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+    <%= render "stat_card", label: "Fichiers uniques",   value: number_with_delimiter(@total_unique_files) %>
+    <%= render "stat_card", label: "Emplacements actifs", value: number_with_delimiter(@total_active_locs) %>
+    <%= render "stat_card", label: "Disparus",            value: number_with_delimiter(@total_missing_locs) %>
+    <%= render "stat_card", label: "Volume total",        value: number_to_human_size(@total_bytes) %>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+
+    <%# ── Format breakdown ───────────────────────────────────────────────── %>
+    <section class="rounded-lg border border-gray-200 bg-white shadow-sm">
+      <h2 class="px-4 pt-4 pb-2 text-sm font-semibold text-gray-700 uppercase tracking-wide">
+        Répartition par format
+      </h2>
+      <% if @counts_by_format.any? %>
+        <table class="min-w-full divide-y divide-gray-100 text-sm">
+          <tbody class="divide-y divide-gray-50">
+            <% @counts_by_format.each do |content_type, count| %>
+              <tr>
+                <td class="px-4 py-2 text-gray-600 font-mono"><%= content_type %></td>
+                <td class="px-4 py-2 text-right tabular-nums text-gray-900"><%= number_with_delimiter(count) %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      <% else %>
+        <p class="px-4 py-4 text-sm text-gray-400">Aucun fichier indexé — lancez un premier scan.</p>
+      <% end %>
+    </section>
+
+    <%# ── Top-folder breakdown ───────────────────────────────────────────── %>
+    <section class="rounded-lg border border-gray-200 bg-white shadow-sm">
+      <h2 class="px-4 pt-4 pb-2 text-sm font-semibold text-gray-700 uppercase tracking-wide">
+        Répartition par dossier de premier niveau
+      </h2>
+      <% if @counts_by_top_folder.any? %>
+        <table class="min-w-full divide-y divide-gray-100 text-sm">
+          <tbody class="divide-y divide-gray-50">
+            <% @counts_by_top_folder.each do |folder, count| %>
+              <tr>
+                <td class="px-4 py-2 text-gray-600 truncate max-w-xs" title="<%= folder %>"><%= folder %></td>
+                <td class="px-4 py-2 text-right tabular-nums text-gray-900"><%= number_with_delimiter(count) %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      <% else %>
+        <p class="px-4 py-4 text-sm text-gray-400">Aucun fichier indexé — lancez un premier scan.</p>
+      <% end %>
+    </section>
+  </div>
+
+  <%# ── Exact duplicates ───────────────────────────────────────────────── %>
+  <section class="rounded-lg border border-amber-200 bg-amber-50 shadow-sm">
+    <h2 class="px-4 pt-4 pb-2 text-sm font-semibold text-amber-800 uppercase tracking-wide">
+      Doublons exacts (<%= @exact_duplicates.size %>)
+    </h2>
+    <% if @exact_duplicates.any? %>
+      <div class="divide-y divide-amber-100">
+        <% @exact_duplicates.each do |file| %>
+          <div class="px-4 py-3">
+            <p class="text-xs font-mono text-gray-500 mb-1">
+              <%= number_to_human_size(file.byte_size) %> · <%= file.content_type %> ·
+              <span class="select-all"><%= file.sha256_checksum %></span>
+            </p>
+            <ul class="mt-1 space-y-0.5">
+              <% file.active_locations.each do |loc| %>
+                <li class="text-sm text-gray-700 truncate" title="<%= loc.path %>">
+                  📄 <%= loc.path %>
+                </li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <p class="px-4 py-4 text-sm text-amber-700">Aucun doublon exact détecté.</p>
+    <% end %>
+  </section>
+</div>

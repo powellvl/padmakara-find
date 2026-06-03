@@ -1,6 +1,11 @@
 Rails.application.routes.draw do
   resources :authors
   get "admin", to: "admin/dashboard#index"
+
+  # Phase 01 — NAS inventory dashboard
+  get  "inventory",        to: "inventory#index",        as: :inventory
+  post "inventory/scan",   to: "inventory#trigger_scan", as: :trigger_scan_inventory
+
   get "/search", to: "search#index"
   namespace :admin do
     resources :users

@@ -4,7 +4,11 @@ source "https://rubygems.org"
 gem "rails", "~> 8.0.1"
 # The modern asset pipeline for Rails [https://github.com/rails/propshaft]
 gem "propshaft"
-# Use sqlite3 as the database for Active Record
+# Primary database — PostgreSQL
+gem "pg", "~> 1.5"
+# pgvector Ruby client (vector similarity search, Phase 3)
+gem "pgvector", "~> 0.2"
+# SQLite is kept for Solid Queue / Cache / Cable (transient operational data only)
 gem "sqlite3", ">= 2.1"
 # Use the Puma web server [https://github.com/puma/puma]
 gem "puma", ">= 5.0"

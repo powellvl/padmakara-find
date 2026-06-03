@@ -1,7 +1,8 @@
-<% 
+<%
   menu_items = [
-  ] 
-  
+    { name: "Inventaire", path: inventory_path }
+  ]
+
   # Ajouter l'élément Admin Dashboard seulement si l'utilisateur est admin
   menu_items << { name: "Admin Dashboard", path: admin_path } if Current.user&.admin?
 %>
