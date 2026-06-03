@@ -42,9 +42,8 @@ class InventoryControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "unauthenticated request is redirected" do
-    # Clear the session cookie
-    cookies.delete(:session_id)
-    get inventory_path
+    # Make a fresh, cookie-free request without going through setup's sign_in.
+    get inventory_url, headers: { "Cookie" => "" }
     assert_redirected_to new_session_path
   end
 end

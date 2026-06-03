@@ -1,7 +1,9 @@
 module AuthenticationHelper
+  # Signs in by POSTing to the real session endpoint so the signed cookie
+  # is set exactly as the application sets it in production code.
+  # Requires the user factory to have password "password123".
   def sign_in(user)
-    session_record = Session.create!(user: user, ip_address: "127.0.0.1", user_agent: "Test")
-    cookies.signed[:session_id] = session_record.id
+    post session_path, params: { email: user.email, password: "password123" }
   end
 end
 

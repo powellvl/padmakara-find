@@ -19,9 +19,10 @@ class InventoryController < ApplicationController
       .transform_values(&:count)
       .sort_by { |_, n| -n }
 
-    @exact_duplicates = CataloguedFile
-      .with_multiple_active_locations
-      .includes(:file_locations)
+    # Two-step: the GROUP BY scope returns only IDs; we then load the full records
+    # with their locations in a separate query to avoid a PG GROUP BY conflict.
+    duplicate_ids = CataloguedFile.with_multiple_active_locations.pluck(:id)
+    @exact_duplicates = CataloguedFile.where(id: duplicate_ids).includes(:file_locations)
   end
 
   def trigger_scan
