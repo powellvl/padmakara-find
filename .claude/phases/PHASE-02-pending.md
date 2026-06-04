@@ -1,5 +1,6 @@
 # Phase 02 — Content extraction & full-text search
-Status: ACTIVE
+Status: COMPLETE ✓
+Validated: 2026-06-04
 
 ## Goal
 Extract the text of every supported file and make the whole corpus full-text searchable — before any manual cataloging.
@@ -15,9 +16,9 @@ Extract the text of every supported file and make the whole corpus full-text sea
 - [x] Inventory dashboard updated with extraction-status breakdown.
 
 ## Acceptance Criteria
-- Full-text search returns relevant CataloguedFiles by their content, not just filename.
-- Extraction failures are surfaced in the inventory dashboard, not swallowed.
-- Re-scanning a file whose content has not changed does not re-extract.
+- [x] Full-text search returns relevant CataloguedFiles by their content, not just filename.
+- [x] Extraction failures are surfaced in the inventory dashboard, not swallowed.
+- [x] Re-scanning a file whose content has not changed does not re-extract.
 
 ## Decisions Made This Phase
-(append as you go)
+- **2026-06-03** — Full-text search uses PostgreSQL `tsvector`/`pg_trgm` with `'simple'` config (no language-specific stemming). OCR and Tibetan search explicitly deferred. See DECISIONS.md.
