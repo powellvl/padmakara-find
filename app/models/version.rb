@@ -1,6 +1,7 @@
 class Version < ApplicationRecord
   belongs_to :translation
-  has_many_attached :files
+  has_many :catalogued_files   # Phase 03: indexed NAS files linked to this version
+  has_many_attached :files     # Legacy: kept for backward compatibility, removal in future phase
   has_one_attached :cover
 
   enum :status, { draft: 0, reviewing: 1, editing: 2, reviewing_edition: 3, published: 4 }

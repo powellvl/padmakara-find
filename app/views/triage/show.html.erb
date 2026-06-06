@@ -1,0 +1,146 @@
+<div class="max-w-4xl mx-auto px-4 py-8">
+  <%= link_to "← Retour à la file", triage_index_path, class: "text-sm text-indigo-600 hover:underline mb-6 block" %>
+
+  <h1 class="text-xl font-bold text-gray-900 mb-1">Relecture de la proposition IA</h1>
+  <p class="text-sm text-gray-500 mb-6">
+    Modèle : <code><%= @proposal.model_used %></code> ·
+    Confiance : <strong class="<%= @proposal.confidence == 'high' ? 'text-green-700' : @proposal.confidence == 'medium' ? 'text-amber-700' : 'text-red-700' %>"><%= @proposal.confidence %></strong>
+  </p>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+
+    <%# ── File info ── %>
+    <section class="rounded-lg border border-gray-200 bg-white shadow-sm p-4">
+      <h2 class="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-3">Fichier source</h2>
+      <p class="text-sm font-medium text-gray-900 truncate"><%= @location&.filename %></p>
+      <p class="text-xs text-gray-400 truncate mb-2"><%= @location&.path %></p>
+      <p class="text-xs text-gray-500"><%= @cf.content_type %> · <%= number_to_human_size(@cf.byte_size) %></p>
+
+      <% if @cf.extracted_text.present? %>
+        <div class="mt-3 max-h-40 overflow-y-auto rounded bg-gray-50 p-2 text-xs text-gray-700 font-mono leading-relaxed">
+          <%= @cf.extracted_text.first(1_000) %><% if @cf.extracted_text.length > 1_000 %>&hellip;<% end %>
+        </div>
+      <% else %>
+        <p class="mt-3 text-xs text-gray-400 italic">Aucun texte extrait.</p>
+      <% end %>
+    </section>
+
+    <%# ── Near duplicates ── %>
+    <section class="rounded-lg border border-amber-200 bg-amber-50 shadow-sm p-4">
+      <h2 class="text-sm font-semibold text-amber-800 uppercase tracking-wide mb-3">
+        Doublons sémantiques proches (<%= @near_dupes.size %>)
+      </h2>
+      <% if @near_dupes.any? %>
+        <ul class="space-y-2">
+          <% @near_dupes.each do |dupe| %>
+            <% dupe_loc = dupe.active_locations.first %>
+            <li class="text-xs">
+              <span class="font-medium text-amber-900"><%= dupe_loc&.filename %></span>
+              <span class="text-amber-600 ml-1">(<%= "%.0f%%" % (dupe.similarity_score.to_f * 100) %> similaire)</span>
+              <p class="text-amber-700 truncate"><%= dupe_loc&.path %></p>
+            </li>
+          <% end %>
+        </ul>
+      <% else %>
+        <p class="text-sm text-amber-700">Aucun doublon proche détecté.</p>
+      <% end %>
+    </section>
+  </div>
+
+  <%# ── Accept form ── %>
+  <section class="rounded-lg border border-gray-200 bg-white shadow-sm p-6 mb-6">
+    <h2 class="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-4">Proposition — confirmez ou corrigez</h2>
+
+    <%= form_with url: accept_triage_path(@proposal), method: :post do |f| %>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+
+        <div>
+          <%= label_tag :title_tibetan, "Titre tibétain", class: "block text-xs font-medium text-gray-700 mb-1" %>
+          <%= text_field_tag "proposal[title_tibetan]", @proposal.proposed_title_tibetan,
+                class: "w-full rounded border-gray-300 text-sm shadow-sm focus:ring-indigo-500" %>
+        </div>
+
+        <div>
+          <%= label_tag :title_phonetic, "Titre phonétique", class: "block text-xs font-medium text-gray-700 mb-1" %>
+          <%= text_field_tag "proposal[title_phonetic]", @proposal.proposed_title_phonetic,
+                class: "w-full rounded border-gray-300 text-sm shadow-sm focus:ring-indigo-500" %>
+        </div>
+
+        <div>
+          <%= label_tag :title_wylie, "Titre Wylie", class: "block text-xs font-medium text-gray-700 mb-1" %>
+          <%= text_field_tag "proposal[title_wylie]", @proposal.proposed_title_wylie,
+                class: "w-full rounded border-gray-300 text-sm shadow-sm focus:ring-indigo-500" %>
+        </div>
+
+        <div>
+          <%= label_tag :language, "Langue", class: "block text-xs font-medium text-gray-700 mb-1" %>
+          <%= select_tag "proposal[language]",
+                options_for_select(@languages.map { |l| [l.name, l.name] }, @proposal.proposed_language),
+                include_blank: "— choisir —",
+                class: "w-full rounded border-gray-300 text-sm shadow-sm focus:ring-indigo-500" %>
+        </div>
+
+        <div class="md:col-span-2">
+          <%= label_tag :version_name, "Nom de la version (ex: v1, brouillon 2023)", class: "block text-xs font-medium text-gray-700 mb-1" %>
+          <%= text_field_tag "proposal[version_name]", @location&.filename,
+                class: "w-full rounded border-gray-300 text-sm shadow-sm focus:ring-indigo-500" %>
+        </div>
+      </div>
+
+      <%# Associations %>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+
+        <div>
+          <p class="text-xs font-medium text-gray-700 mb-1">Déités</p>
+          <% @deities.each do |d| %>
+            <label class="flex items-center gap-1.5 text-sm mb-0.5">
+              <%= check_box_tag "proposal[deity_ids][]", d.id,
+                    @proposal.proposed_deity_names.any? { |n| d.name_english&.downcase&.include?(n.downcase) || n.downcase.include?(d.name_english.to_s.downcase) } %>
+              <%= d.name_english %>
+            </label>
+          <% end %>
+        </div>
+
+        <div>
+          <p class="text-xs font-medium text-gray-700 mb-1">Écoles</p>
+          <% @schools.each do |s| %>
+            <label class="flex items-center gap-1.5 text-sm mb-0.5">
+              <%= check_box_tag "proposal[school_ids][]", s.id,
+                    @proposal.proposed_school_names.any? { |n| s.name&.downcase&.include?(n.downcase) } %>
+              <%= s.name %>
+            </label>
+          <% end %>
+        </div>
+
+        <div>
+          <p class="text-xs font-medium text-gray-700 mb-1">Auteurs / maîtres</p>
+          <% @authors.each do |a| %>
+            <label class="flex items-center gap-1.5 text-sm mb-0.5">
+              <%= check_box_tag "proposal[author_ids][]", a.id,
+                    @proposal.proposed_author_names.any? { |n| a.name_english&.downcase&.include?(n.downcase) } %>
+              <%= a.name_english %>
+            </label>
+          <% end %>
+        </div>
+      </div>
+
+      <% if @proposal.ai_notes.present? %>
+        <p class="mb-4 text-xs text-gray-500 italic">Note IA : <%= @proposal.ai_notes %></p>
+      <% end %>
+
+      <%= f.submit "✓ Accepter et cataloguer", class: "rounded bg-green-600 px-4 py-2 text-sm font-semibold text-white hover:bg-green-700 cursor-pointer" %>
+    <% end %>
+  </section>
+
+  <%# ── Secondary actions ── %>
+  <div class="flex gap-3">
+    <%= button_to "Passer (ignorer)", skip_triage_path(@proposal), method: :post,
+          class: "rounded bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200" %>
+
+    <%= button_to "Relancer avec le modèle fort (Opus)", rerun_triage_path(@proposal), method: :post,
+          class: "rounded bg-amber-100 px-4 py-2 text-sm font-medium text-amber-800 hover:bg-amber-200" %>
+
+    <%= button_to "Rejeter", reject_triage_path(@proposal), method: :post,
+          class: "rounded bg-red-50 px-4 py-2 text-sm font-medium text-red-700 hover:bg-red-100" %>
+  </div>
+</div>

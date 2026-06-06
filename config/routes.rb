@@ -6,6 +6,17 @@ Rails.application.routes.draw do
   get  "inventory",        to: "inventory#index",        as: :inventory
   post "inventory/scan",   to: "inventory#trigger_scan", as: :trigger_scan_inventory
 
+  # Phase 03 — AI-assisted triage
+  get  "triage",            to: "triage#index",  as: :triage_index
+  resources :triage, only: %i[show], controller: "triage" do
+    member do
+      post :accept
+      post :skip
+      post :reject
+      post :rerun
+    end
+  end
+
   get "/search", to: "search#index"
   namespace :admin do
     resources :users

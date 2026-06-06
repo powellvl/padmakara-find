@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_06_03_100001) do
+ActiveRecord::Schema[8.0].define(version: 2026_06_06_000002) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -45,6 +45,28 @@ ActiveRecord::Schema[8.0].define(version: 2026_06_03_100001) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
+  create_table "ai_triage_proposals", force: :cascade do |t|
+    t.bigint "catalogued_file_id", null: false
+    t.string "proposed_title_tibetan"
+    t.string "proposed_title_wylie"
+    t.string "proposed_title_phonetic"
+    t.string "proposed_language"
+    t.boolean "is_prayer_text", default: true
+    t.string "confidence"
+    t.string "model_used"
+    t.text "ai_notes"
+    t.jsonb "proposed_deity_names", default: []
+    t.jsonb "proposed_school_names", default: []
+    t.jsonb "proposed_author_names", default: []
+    t.jsonb "raw_response"
+    t.integer "status", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["catalogued_file_id"], name: "index_ai_triage_proposals_on_catalogued_file_id"
+    t.index ["confidence"], name: "index_ai_triage_proposals_on_confidence"
+    t.index ["status"], name: "index_ai_triage_proposals_on_status"
+  end
+
   create_table "authors", force: :cascade do |t|
     t.string "name_english"
     t.datetime "created_at", null: false
@@ -73,12 +95,14 @@ ActiveRecord::Schema[8.0].define(version: 2026_06_03_100001) do
     t.text "extracted_text"
     t.integer "extraction_status", default: 0, null: false
     t.tsvector "content_tsvector"
+    t.bigint "version_id"
     t.index ["content_tsvector"], name: "index_catalogued_files_on_content_tsvector", using: :gin
     t.index ["content_type"], name: "index_catalogued_files_on_content_type"
     t.index ["extracted_text"], name: "index_catalogued_files_on_extracted_text_trgm", opclass: :gin_trgm_ops, using: :gin
     t.index ["extraction_status"], name: "index_catalogued_files_on_extraction_status"
     t.index ["sha256_checksum"], name: "index_catalogued_files_on_sha256_checksum", unique: true
     t.index ["triage_state"], name: "index_catalogued_files_on_triage_state"
+    t.index ["version_id"], name: "index_catalogued_files_on_version_id"
   end
 
   create_table "deities", force: :cascade do |t|
@@ -214,8 +238,10 @@ ActiveRecord::Schema[8.0].define(version: 2026_06_03_100001) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "ai_triage_proposals", "catalogued_files"
   add_foreign_key "authors_texts", "authors", on_delete: :cascade
   add_foreign_key "authors_texts", "texts", on_delete: :cascade
+  add_foreign_key "catalogued_files", "versions"
   add_foreign_key "deities_texts", "deities", on_delete: :cascade
   add_foreign_key "deities_texts", "texts", on_delete: :cascade
   add_foreign_key "file_locations", "catalogued_files"

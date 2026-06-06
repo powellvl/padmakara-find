@@ -1,5 +1,7 @@
 class CataloguedFile < ApplicationRecord
-  has_many :file_locations, dependent: :destroy
+  has_many  :file_locations, dependent: :destroy
+  has_many  :ai_triage_proposals, dependent: :destroy
+  belongs_to :version, optional: true
 
   enum :triage_state, { pending: 0, triaged: 1 }
 

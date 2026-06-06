@@ -21,6 +21,7 @@ gem "stimulus-rails"
 
 gem "pdf-reader"  # PDF text extraction (Phase 02)
 gem "rubyzip"     # docx text extraction — docx files are ZIP archives (Phase 02)
+gem "anthropic"   # Claude API client — AI-assisted triage (Phase 03)
 
 gem "mini_magick" # Pour manipuler les images
 
