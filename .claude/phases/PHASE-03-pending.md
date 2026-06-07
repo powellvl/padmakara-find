@@ -1,5 +1,6 @@
 # Phase 03 — AI-assisted triage & cataloging
-Status: ACTIVE
+Status: COMPLETE ✓
+Validated: 2026-06-07
 
 ## Goal
 For each un-catalogued file, have Claude propose catalog metadata and near-duplicate links; a human confirms or corrects each suggestion into the Text → Translation → Version model.
@@ -14,9 +15,11 @@ For each un-catalogued file, have Claude propose catalog metadata and near-dupli
 - [x] Tests covering: file goes from untriaged → linked to a Version; near-duplicate clusters surface; nothing is auto-committed without human confirmation.
 
 ## Acceptance Criteria
-- A file can move from "untriaged" to "linked to a Version" in a few clicks.
-- Near-duplicate clusters are surfaced to the reviewer.
-- The human is always in the loop — no metadata enters the catalog without confirmation.
+- [x] A file can move from "untriaged" to "linked to a Version" in a few clicks.
+- [x] Near-duplicate clusters are surfaced to the reviewer.
+- [x] The human is always in the loop — no metadata enters the catalog without confirmation.
 
 ## Decisions Made This Phase
-(append as you go)
+- **2026-06-06** — Near-duplicate detection uses pg_trgm similarity (not embeddings). Embeddings deferred until an embedding API is chosen. See DECISIONS.md.
+- **2026-06-06** — AiTriageService client injected via constructor for testability (avoids ENV.fetch at init time). Fake client used for local validation without API key.
+- **2026-06-06** — has_many_attached :files kept on Version for backward compat. Full removal scheduled for a future cleanup phase.
