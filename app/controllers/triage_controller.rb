@@ -1,4 +1,5 @@
 class TriageController < ApplicationController
+  before_action :authorize_admin
   before_action :set_proposal, only: %i[show accept reject skip rerun]
 
   # GET /triage — queue of files with pending AI proposals

@@ -1,44 +1,45 @@
-<div class="max-w-5xl mx-auto px-4 py-8">
-  <div class="flex items-center justify-between mb-6">
-    <h1 class="text-2xl font-bold text-gray-900">File d'attente — Triage IA</h1>
-  </div>
+<%= render "shared/admin_header",
+      title: "Triage IA",
+      subtitle: "#{@stats[:pending]} proposition(s) en attente · #{@stats[:accepted]} acceptées · #{@stats[:skipped]} ignorées" %>
 
-  <%# ── Stats ── %>
-  <div class="grid grid-cols-3 gap-4 mb-8">
-    <%= render "inventory/stat_card", label: "En attente de relecture", value: @stats[:pending] %>
-    <%= render "inventory/stat_card", label: "Acceptés",                value: @stats[:accepted] %>
-    <%= render "inventory/stat_card", label: "Ignorés / rejetés",       value: @stats[:skipped] %>
-  </div>
+<div class="max-w-5xl mx-auto px-4 pb-8">
 
   <% if @awaiting_triage > 0 %>
-    <p class="mb-6 text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded px-4 py-2">
-      <%= @awaiting_triage %> fichier(s) extrait(s) n'ont pas encore été soumis à l'IA.
-      Ils seront traités automatiquement via <code>TriageFileJob</code> après le prochain scan.
+    <p class="mb-4 text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded px-4 py-2">
+      <%= @awaiting_triage %> fichier(s) extrait(s) pas encore soumis à l'IA — seront traités automatiquement après le prochain scan.
     </p>
   <% end %>
 
   <% if @pending.any? %>
-    <div class="space-y-3">
+    <div class="space-y-2">
       <% @pending.each do |proposal| %>
         <% cf = proposal.catalogued_file %>
         <% loc = cf.active_locations.first %>
-        <div class="flex items-center justify-between rounded-lg border border-gray-200 bg-white px-4 py-3 shadow-sm">
+        <div class="flex items-center justify-between rounded-lg border border-gray-200 bg-white px-4 py-3 shadow-sm hover:border-indigo-200 transition">
           <div class="min-w-0 flex-1">
-            <p class="truncate text-sm font-medium text-gray-900">
+            <p class="truncate text-sm font-semibold text-gray-900">
               <%= loc&.filename || cf.sha256_checksum.first(16) %>
             </p>
-            <p class="text-xs text-gray-500 truncate"><%= loc&.path %></p>
-            <div class="mt-1 flex gap-2">
-              <span class="text-xs text-gray-500"><%= cf.content_type %></span>
-              <span class="text-xs text-gray-500"><%= number_to_human_size(cf.byte_size) %></span>
-              <span class="text-xs font-medium
-                <%= proposal.confidence == 'high' ? 'text-green-700' :
-                    proposal.confidence == 'medium' ? 'text-amber-700' : 'text-red-700' %>">
-                Confiance : <%= proposal.confidence %>
+            <p class="text-xs text-gray-400 truncate mt-0.5"><%= loc&.path %></p>
+            <div class="mt-1.5 flex flex-wrap gap-2">
+              <span class="inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-600">
+                <%= cf.content_type.split("/").last %>
               </span>
+              <span class="inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-600">
+                <%= number_to_human_size(cf.byte_size) %>
+              </span>
+              <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium
+                <%= proposal.confidence == 'high'   ? 'bg-green-100 text-green-700' :
+                    proposal.confidence == 'medium' ? 'bg-amber-100 text-amber-700' :
+                                                      'bg-red-100 text-red-700' %>">
+                <%= proposal.confidence %>
+              </span>
+              <% if proposal.proposed_title_phonetic.present? %>
+                <span class="text-xs text-gray-500 italic"><%= proposal.proposed_title_phonetic %></span>
+              <% end %>
             </div>
           </div>
-          <div class="ml-4 flex gap-2 shrink-0">
+          <div class="ml-4 shrink-0">
             <%= link_to "Relire →", triage_path(proposal),
                   class: "rounded bg-indigo-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-indigo-700" %>
           </div>
@@ -46,9 +47,11 @@
       <% end %>
     </div>
   <% else %>
-    <p class="text-center text-gray-400 py-12">
-      Aucune proposition en attente de relecture.<br>
-      <span class="text-sm">Lancez un scan depuis l'<%= link_to "inventaire", inventory_path, class: "underline" %> pour démarrer l'extraction et le triage.</span>
-    </p>
+    <div class="text-center py-16 text-gray-400">
+      <p class="text-lg font-medium mb-1">File vide</p>
+      <p class="text-sm">
+        Lancez un scan depuis l'<%= link_to "inventaire", inventory_path, class: "underline hover:text-indigo-600" %> pour démarrer.
+      </p>
+    </div>
   <% end %>
 </div>

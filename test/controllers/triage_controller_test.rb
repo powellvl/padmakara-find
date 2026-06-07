@@ -2,7 +2,7 @@ require "test_helper"
 
 class TriageControllerTest < ActionDispatch::IntegrationTest
   setup do
-    @user     = create(:user)
+    @user     = create(:user, :admin)
     sign_in(@user)
     @language = create(:language, name: "French")
     @cf       = create(:catalogued_file,

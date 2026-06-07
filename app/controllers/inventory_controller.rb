@@ -1,4 +1,6 @@
 class InventoryController < ApplicationController
+  before_action :authorize_admin
+
   def index
     active_locations = FileLocation.active
 

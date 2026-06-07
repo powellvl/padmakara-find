@@ -2,7 +2,7 @@ require "test_helper"
 
 class InventoryControllerTest < ActionDispatch::IntegrationTest
   setup do
-    @user = create(:user)
+    @user = create(:user, :admin)
     sign_in(@user)
   end
 

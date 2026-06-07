@@ -1,0 +1,13 @@
+<div class="border-b border-gray-200 bg-white mb-6">
+  <div class="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
+    <div>
+      <h1 class="text-xl font-bold text-gray-900"><%= title %></h1>
+      <% if local_assigns[:subtitle] %>
+        <p class="text-sm text-gray-500 mt-0.5"><%= subtitle %></p>
+      <% end %>
+    </div>
+    <% if local_assigns[:action_html] %>
+      <%= action_html %>
+    <% end %>
+  </div>
+</div>

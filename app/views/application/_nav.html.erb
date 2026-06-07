@@ -1,11 +1,11 @@
 <%
-  menu_items = [
-    { name: "Inventaire", path: inventory_path },
-    { name: "Triage IA",  path: triage_index_path }
-  ]
+  menu_items = []
 
-  # Ajouter l'élément Admin Dashboard seulement si l'utilisateur est admin
-  menu_items << { name: "Admin Dashboard", path: admin_path } if Current.user&.admin?
+  if Current.user&.admin?
+    menu_items << { name: "Inventaire",    path: inventory_path }
+    menu_items << { name: "Triage IA",     path: triage_index_path }
+    menu_items << { name: "Admin",         path: admin_path }
+  end
 %>
 
 <nav class="sticky top-10 z-10" aria-label="Global">
