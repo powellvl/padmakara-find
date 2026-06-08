@@ -1,35 +1,22 @@
-<header class="sticky top-0 z-30 bg-parchment border-b border-parchment-dark flex items-center gap-4 px-6 h-14">
+<header class="sticky top-0 z-30 bg-parchment border-b border-parchment-dark flex items-center px-6 h-14">
 
-  <%# Logo %>
-  <%= link_to root_path, class: "shrink-0 mr-2" do %>
-    <%= image_tag "logo/logopadmakaraFind.png", class: "h-8 w-8 object-contain", alt: "Padmakara" %>
+  <%# Espace gauche (équilibre) %>
+  <div class="flex-1"></div>
+
+  <%# Logo centré %>
+  <%= link_to root_path, class: "flex items-center justify-center" do %>
+    <%= image_tag "logo/logopadmakaraFind.png", class: "h-8 object-contain", alt: "Padmakara" %>
   <% end %>
 
-  <%# Search — aucune box, juste loupe + texte %>
-  <div class="flex-1">
-    <%= form_with url: search_path, method: :get, local: true, class: "search-bare-form" do |f| %>
-      <div class="search-bare-wrapper group">
-        <svg class="search-bare-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.7">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-        </svg>
-        <%= f.text_field :query,
-              placeholder: "Rechercher un texte, titre tibétain, phonétique…",
-              class: "search-bare-input" %>
-      </div>
-    <% end %>
-  </div>
+  <%# Droite — notifications + user %>
+  <div class="flex-1 flex items-center justify-end gap-3">
 
-  <%# Right side — notifications + user %>
-  <div class="flex items-center gap-3 shrink-0">
-
-    <%# Cloche notifications (non fonctionnelle pour l'instant) %>
     <button class="w-8 h-8 flex items-center justify-center rounded-lg text-stone-400 hover:text-stone-700 hover:bg-parchment-hover transition-colors" title="Notifications">
       <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.7">
         <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
       </svg>
     </button>
 
-    <%# Avatar + prénom %>
     <%= link_to user_path(Current.user),
           class: "flex items-center gap-2 rounded-lg px-2 py-1 hover:bg-parchment-hover transition-colors group" do %>
       <div class="w-7 h-7 rounded-full bg-stone-200 flex items-center justify-center shrink-0">
