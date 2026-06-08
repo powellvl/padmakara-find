@@ -68,6 +68,58 @@
   opacity: 1;
 }
 
+/* ── Search bare (aucune box, juste loupe + texte) ───────────────────── */
+
+.search-bare-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  max-width: 36rem;
+  padding: 0.25rem 0;
+  border-bottom: 1.5px solid transparent;
+  transition: border-color 0.2s;
+}
+
+.search-bare-wrapper:focus-within {
+  border-bottom-color: #C4622D;
+}
+
+.search-bare-wrapper:hover:not(:focus-within) {
+  border-bottom-color: #e7e0d5;
+}
+
+.search-bare-icon {
+  width: 1rem;
+  height: 1rem;
+  color: #a8a29e;
+  flex-shrink: 0;
+  transition: color 0.2s;
+}
+
+.search-bare-wrapper:focus-within .search-bare-icon {
+  color: #C4622D;
+}
+
+.search-bare-input {
+  background: transparent;
+  border: none;
+  outline: none;
+  box-shadow: none;
+  width: 100%;
+  font-size: 0.875rem;
+  color: #1c1917;
+  padding: 0;
+}
+
+.search-bare-input::placeholder {
+  color: #a8a29e;
+}
+
+.search-bare-input:focus {
+  outline: none;
+  box-shadow: none;
+}
+
 /* ── Text cards (redesign Phase UI) ─────────────────────────────────── */
 
 .book-card {
