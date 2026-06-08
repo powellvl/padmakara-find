@@ -12,6 +12,18 @@ module.exports = {
       fontFamily: {
         sans: ['Inter var', ...defaultTheme.fontFamily.sans],
       },
+      colors: {
+        parchment: {
+          DEFAULT: '#F7F0E3',
+          hover:   '#EDE6D8',
+          dark:    '#E7E0D5',
+        },
+        saffron: {
+          DEFAULT: '#C4622D',
+          light:   '#D97348',
+          dark:    '#A3501F',
+        },
+      },
     },
   },
   plugins: [

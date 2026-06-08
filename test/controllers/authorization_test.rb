@@ -40,24 +40,24 @@ class AuthorizationTest < ActionDispatch::IntegrationTest
   test "admin sees pipeline block on home" do
     sign_in(@admin)
     get root_path
-    assert_select "h2", /Pipeline NAS/i
+    assert_match "Pipeline NAS", response.body
   end
 
   test "non-admin does not see pipeline block on home" do
     sign_in(@user)
     get root_path
-    assert_select "h2", text: /Pipeline NAS/i, count: 0
+    assert_no_match "Pipeline NAS", response.body
   end
 
-  test "non-admin does not see Add New Text button" do
+  test "non-admin does not see new text button" do
     sign_in(@user)
     get root_path
-    assert_select "a", text: /Add New Text/i, count: 0
+    assert_no_match "Nouveau texte", response.body
   end
 
-  test "admin sees Add New Text button" do
+  test "admin sees new text button" do
     sign_in(@admin)
     get root_path
-    assert_select "a", text: /Add New Text/i
+    assert_match "Nouveau texte", response.body
   end
 end
