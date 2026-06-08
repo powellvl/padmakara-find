@@ -1,15 +1,13 @@
-<!-- En-tête des résultats de recherche -->
-<div class="search-results-header">
-  <h2 class="search-results-title">
-    Results for "<span class="search-query-highlight"><%= @query %></span>"
-  </h2>
-  <% if @selected_content_types != ['texts', 'versions', 'files'] %>
-    <p class="search-results-subtitle">
-      Showing: 
-      <% @selected_content_types.each_with_index do |type, index| %>
-        <%= @content_type_options.find { |opt| opt[:id] == type }[:icon] %> 
-        <%= @content_type_options.find { |opt| opt[:id] == type }[:name] %><%= index < @selected_content_types.length - 1 ? ', ' : '' %>
-      <% end %>
-    </p>
-  <% end %>
+<div class="max-w-5xl mx-auto px-6 mb-6">
+  <div class="border-b border-parchment-dark pb-3">
+    <p class="text-xs font-bold uppercase tracking-widest text-stone-400 mb-0.5">Résultats</p>
+    <h2 class="text-lg font-semibold text-stone-900">
+      « <span class="text-saffron"><%= @query %></span> »
+    </h2>
+    <% if @selected_content_types != ['texts', 'versions', 'files'] %>
+      <p class="text-xs text-stone-400 mt-1">
+        Types : <%= @selected_content_types.map { |t| @content_type_options.find { |o| o[:id] == t }&.dig(:name) }.compact.join(", ") %>
+      </p>
+    <% end %>
+  </div>
 </div>

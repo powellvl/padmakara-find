@@ -1,15 +1,10 @@
-<!-- Filtre par Tags -->
-<div class="filter-group">
-  <h4>Tags</h4>
-  <div class="filter-pills-container">
+<div class="search-filter-group">
+  <p class="search-filter-label">Tags</p>
+  <div class="search-pills">
     <%= form.collection_check_boxes :tag_ids, @tags, :id, :name, { checked: @selected_tag_ids } do |b| %>
-      <label class="pill-filter" 
-             data-category="tag"
-             data-action="click->search#togglePill">
+      <label class="pill-filter" data-category="tag" data-action="click->search#togglePill">
         <%= b.check_box(class: "pill-checkbox") %>
-        <span class="pill-content">
-          <%= b.text %>
-        </span>
+        <span class="pill-content"><%= b.text %></span>
       </label>
     <% end %>
   </div>

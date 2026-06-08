@@ -1,11 +1,7 @@
-<!-- Aucun résultat trouvé -->
-<div class="no-results-container">
-  <div class="no-results-content">
-    <svg xmlns="http://www.w3.org/2000/svg" class="no-results-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-    </svg>
-    <p class="no-results-text">
-      Aucun résultat trouvé pour "<span class="no-results-query"><%= @query %></span>"
-    </p>
-  </div>
+<div class="text-center py-16 text-stone-400 max-w-md mx-auto">
+  <svg class="w-10 h-10 mx-auto mb-4 text-parchment-dark" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+  </svg>
+  <p class="font-medium text-stone-600">Aucun résultat</p>
+  <p class="text-sm mt-1">Aucun texte trouvé pour « <span class="text-saffron font-medium"><%= @query %></span> »</p>
 </div>

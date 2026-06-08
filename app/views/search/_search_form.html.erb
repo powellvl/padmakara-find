@@ -1,51 +1,56 @@
-<!-- Formulaire de recherche et filtres -->
-<section class="search-form-section" 
+<section class="px-6 pb-8"
          data-controller="search"
          data-search-has-active-filters-value="<%= (@selected_school_ids.any? || @selected_deity_ids.any? || @selected_tag_ids.any? || @selected_content_types != ['texts', 'versions', 'files']).to_s %>">
-  <%= form_with url: search_path, method: :get, local: true, class: "search-form" do |f| %>
-    <!-- Barre de recherche -->
-    <div class="search-input-container">
-      <div class="search-icon">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
-          <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
-        </svg>
+
+  <%= form_with url: search_path, method: :get, local: true do |f| %>
+
+    <%# ── Grand champ centré ────────────────────────────────────────────── %>
+    <div class="flex flex-col items-center">
+      <div class="w-full max-w-2xl">
+
+        <div class="search-hero-wrapper">
+          <svg class="search-hero-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+          </svg>
+          <%= f.text_field :query,
+                value: @query,
+                placeholder: "Titre tibétain, phonétique, contenu…",
+                class: "search-hero-input" %>
+        </div>
+
+        <div class="flex items-center justify-center gap-4 mt-7">
+          <%= f.submit "Rechercher", class: "search-hero-button" %>
+
+          <button type="button"
+                  class="search-filters-toggle"
+                  data-search-target="toggleButton"
+                  data-action="click->search#toggleFilters">
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.7">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z" />
+            </svg>
+            <span data-search-target="filterText">Filtres</span>
+            <svg data-search-target="chevronDown" class="search-filters-chevron" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+        </div>
       </div>
-      <%= f.text_field :query, 
-          value: @query, 
-          placeholder: "Find more...", 
-          class: "search-input" %>
-      <%= f.submit "Rechercher", class: "search-button" %>
     </div>
 
-    <!-- Bouton pour afficher/masquer les filtres -->
-    <button type="button" 
-            class="filters-toggle-button"
-            data-search-target="toggleButton"
-            data-action="click->search#toggleFilters">
-      <svg id="filterIcon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-      </svg>
-      <span data-search-target="filterText">Show Filters</span>
-      <svg data-search-target="chevronDown" class="filters-toggle-chevron" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-      </svg>
-    </button>
-
-    <!-- Section des filtres -->
-    <div class="filters-section" 
+    <%# ── Panneau filtres ──────────────────────────────────────────────── %>
+    <div class="filters-section search-filters-panel mt-6 max-w-3xl mx-auto"
          data-search-target="filtersSection">
-      <div class="filters-grid">
+      <div class="search-filters-grid">
         <%= render 'filter_schools', form: f %>
         <%= render 'filter_deities', form: f %>
         <%= render 'filter_tags', form: f %>
         <%= render 'filter_content_types', form: f %>
       </div>
-
-      <!-- Boutons d'action pour les filtres -->
-      <div class="filters-actions">
-        <%= f.submit "Apply filters", class: "apply-filters-button" %>
-        <%= link_to "Reset", search_path, class: "clear-filters-button" %>
+      <div class="flex items-center justify-center gap-3 mt-5 pt-4 border-t border-parchment-dark">
+        <%= f.submit "Appliquer les filtres", class: "search-apply-button" %>
+        <%= link_to "Réinitialiser", search_path, class: "search-reset-link" %>
       </div>
     </div>
+
   <% end %>
 </section>
