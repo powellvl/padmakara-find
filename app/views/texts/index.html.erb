@@ -1,16 +1,25 @@
 <% content_for :title, "Bibliothèque" %>
 
-<%# ── Search bar – sticky, proéminente ─────────────────────────────────── %>
-<div class="sticky top-0 z-30 bg-parchment/90 backdrop-blur-sm border-b border-parchment-dark px-6 py-3">
-  <div class="max-w-2xl mx-auto">
+<%# ── Topbar sticky : logo + search ─────────────────────────────────── %>
+<div class="sticky top-0 z-30 bg-parchment border-b border-parchment-dark px-6 py-3 flex items-center gap-4">
+
+  <%# Logo %>
+  <%= link_to root_path, class: "shrink-0" do %>
+    <%= image_tag "logo/logopadmakaraFind.png",
+          class: "h-8 w-8 object-contain",
+          alt: "Padmakara" %>
+  <% end %>
+
+  <%# Search — incrusté dans le fond, pas de fond blanc %>
+  <div class="flex-1 max-w-2xl">
     <%= form_with url: search_path, method: :get, local: true do |f| %>
       <div class="relative flex items-center">
-        <svg class="absolute left-4 w-4 h-4 text-stone-400 pointer-events-none" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <svg class="absolute left-3 w-4 h-4 text-stone-400 pointer-events-none" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.7">
           <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
         </svg>
         <%= f.text_field :query,
               placeholder: "Rechercher un texte, titre tibétain, phonétique…",
-              class: "w-full pl-11 pr-4 py-2.5 bg-white border border-parchment-dark rounded-xl text-sm text-stone-800 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-saffron focus:border-transparent shadow-sm transition" %>
+              class: "w-full pl-9 pr-4 py-2 bg-parchment-hover border border-parchment-dark rounded-lg text-sm text-stone-800 placeholder-stone-400 focus:outline-none focus:border-saffron focus:ring-1 focus:ring-saffron transition" %>
       </div>
     <% end %>
   </div>
