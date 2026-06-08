@@ -5,16 +5,6 @@ class TextsController < ApplicationController
   def index
     @texts = Text.all
 
-    if Current.user&.admin?
-      @pipeline = {
-        scanned:   FileLocation.active.count,
-        extracted: CataloguedFile.extracted.count,
-        pending_triage: AiTriageProposal.pending_review.count,
-        triaged:   CataloguedFile.triaged.count,
-        catalogued: Version.count
-      }
-    end
-
     # Nettoyage et stockage des paramètres pour la vue
     @selected_school_ids = params[:school_ids]&.reject(&:blank?) || []
     @selected_deity_ids = params[:deity_ids]&.reject(&:blank?) || []

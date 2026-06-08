@@ -35,20 +35,6 @@ class AuthorizationTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
-  # ── Home pipeline block ───────────────────────────────────────────────────
-
-  test "admin sees pipeline block on home" do
-    sign_in(@admin)
-    get root_path
-    assert_match "Pipeline NAS", response.body
-  end
-
-  test "non-admin does not see pipeline block on home" do
-    sign_in(@user)
-    get root_path
-    assert_no_match "Pipeline NAS", response.body
-  end
-
   test "non-admin does not see new text button" do
     sign_in(@user)
     get root_path
