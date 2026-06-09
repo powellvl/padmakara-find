@@ -7,6 +7,12 @@ class NasScannerTest < ActiveSupport::TestCase
   setup do
     @tmpdir = Dir.mktmpdir("nas_scanner_test")
     @root   = Pathname.new(@tmpdir)
+
+    # Explicit cleanup because process-based parallelisation disables
+    # automatic transaction rollback between test files.
+    AiTriageProposal.delete_all rescue nil
+    FileLocation.delete_all
+    CataloguedFile.delete_all
   end
 
   teardown do

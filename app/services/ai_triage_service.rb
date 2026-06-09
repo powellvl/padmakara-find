@@ -1,35 +1,33 @@
 require "json"
 
-# Calls the Claude API to analyse a CataloguedFile's extracted text and return
-# a structured triage proposal.
+# Calls the configured AI provider to analyse a CataloguedFile's extracted text
+# and return a structured triage proposal.
 #
-# Tiering:
-#   - claude-haiku-4-5-20251001 for the bulk first pass
-#   - claude-opus-4-8            for low-confidence re-runs (triggered manually)
+# The provider is selected via AI_PROVIDER env var (default: "claude").
+# Model tier:
+#   :fast   — bulk first pass  (Claude Haiku / Mistral Small / etc.)
+#   :strong — low-confidence re-runs, triggered manually (Claude Opus / Mistral Large / etc.)
 #
 # The service NEVER writes to the catalog. It creates an AiTriageProposal record
 # and returns it. A human must accept/edit the proposal to create catalog entries.
 class AiTriageService
-  HAIKU_MODEL = "claude-haiku-4-5-20251001"
-  OPUS_MODEL  = "claude-opus-4-8"
-
   # Maximum characters of extracted text sent to the API to control token cost.
   MAX_TEXT_CHARS = 4_000
 
   Result = Data.define(:proposal, :error)
 
-  def initialize(catalogued_file, force_strong_model: false, client: nil)
+  def initialize(catalogued_file, force_strong_model: false, adapter: nil)
     @cf                 = catalogued_file
     @force_strong_model = force_strong_model
-    @client             = client
+    @adapter            = adapter
   end
 
   def call
     text_sample = (@cf.extracted_text || "").first(MAX_TEXT_CHARS)
     filename    = @cf.active_locations.first&.filename || "(unknown)"
 
-    response = client.messages(
-      model:      model_to_use,
+    response = adapter.messages(
+      model_tier: model_tier,
       max_tokens: 512,
       system:     system_prompt,
       messages:   [ { role: "user", content: user_prompt(filename, text_sample) } ]
@@ -50,7 +48,7 @@ class AiTriageService
       proposed_author_names:   Array(parsed["authors"]),
       confidence:              parsed["confidence"],
       ai_notes:                parsed["notes"],
-      model_used:              model_to_use,
+      model_used:              response.model_used,
       raw_response:            { text: raw_text }
     )
 
@@ -62,12 +60,12 @@ class AiTriageService
 
   private
 
-  def client
-    @client ||= Anthropic::Client.new(api_key: ENV.fetch("ANTHROPIC_API_KEY"))
+  def adapter
+    @adapter ||= AiAdapter.build
   end
 
-  def model_to_use
-    @force_strong_model ? OPUS_MODEL : HAIKU_MODEL
+  def model_tier
+    @force_strong_model ? :strong : :fast
   end
 
   def system_prompt
@@ -109,11 +107,9 @@ class AiTriageService
   end
 
   def parse_response(raw_text)
-    # Strip markdown fences if the model added them despite instructions
     clean = raw_text.gsub(/```(?:json)?\n?/, "").strip
     JSON.parse(clean)
   rescue JSON::ParserError
-    # Return a minimal fallback so the proposal is still created
     {
       "is_prayer_text" => nil,
       "language"       => nil,

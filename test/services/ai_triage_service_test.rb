@@ -23,48 +23,84 @@ class AiTriageServiceTest < ActiveSupport::TestCase
     }.merge(overrides).to_json
   end
 
-  # Returns a plain Ruby object that stands in for Anthropic::Client.
-  # Accepts any keyword arguments (the real SDK uses kwargs for `messages`).
-  def build_mock_client(raw_json)
-    mock_message  = Struct.new(:text).new(raw_json)
-    mock_response = Struct.new(:content).new([ mock_message ])
-    Class.new { define_method(:messages) { |**_| mock_response } }.new
+  # Builds a fake adapter that returns a proper AiAdapter::Response.
+  # Accepts any keyword args so it works regardless of model_tier passed.
+  def build_fake_adapter(raw_json, model_used: "test-model-fast")
+    response = AiAdapter::Response.new(raw_json, model_used: model_used)
+    Class.new { define_method(:messages) { |**_| response } }.new
   end
 
-  test "creates an AiTriageProposal with a stubbed API response" do
-    mock = build_mock_client(stub_response_json)
-    result = AiTriageService.new(@cf, client: mock).call
+  test "creates an AiTriageProposal with a stubbed adapter response" do
+    fake = build_fake_adapter(stub_response_json)
+    result = AiTriageService.new(@cf, adapter: fake).call
 
     assert_nil result.error
     assert_not_nil result.proposal
     assert_equal "Tara Sadhana", result.proposal.proposed_title_phonetic
     assert_equal [ "Tara" ], result.proposal.proposed_deity_names
     assert_equal "high", result.proposal.confidence
-    assert_equal AiTriageService::HAIKU_MODEL, result.proposal.model_used
+    assert_equal "test-model-fast", result.proposal.model_used
   end
 
-  test "uses the strong model when force_strong_model is true" do
-    mock   = build_mock_client(stub_response_json)
-    result = AiTriageService.new(@cf, force_strong_model: true, client: mock).call
+  test "model_used reflects the adapter's resolved model" do
+    fake = build_fake_adapter(stub_response_json, model_used: "mistral-small-latest")
+    result = AiTriageService.new(@cf, adapter: fake).call
 
-    assert_equal AiTriageService::OPUS_MODEL, result.proposal.model_used
+    assert_equal "mistral-small-latest", result.proposal.model_used
   end
 
-  test "returns an error result when the API raises" do
-    raising_client = Object.new
-    def raising_client.messages(**) = raise "network error"
+  test "force_strong_model passes :strong tier to the adapter" do
+    received_tier = nil
+    adapter = Class.new do
+      define_method(:messages) do |model_tier:, **_|
+        received_tier = model_tier
+        AiAdapter::Response.new("{}", model_used: "strong-model")
+      end
+    end.new
 
-    result = AiTriageService.new(@cf, client: raising_client).call
+    AiTriageService.new(@cf, force_strong_model: true, adapter: adapter).call
+
+    assert_equal :strong, received_tier
+  end
+
+  test "default call passes :fast tier to the adapter" do
+    received_tier = nil
+    adapter = Class.new do
+      define_method(:messages) do |model_tier:, **_|
+        received_tier = model_tier
+        AiAdapter::Response.new("{}", model_used: "fast-model")
+      end
+    end.new
+
+    AiTriageService.new(@cf, adapter: adapter).call
+
+    assert_equal :fast, received_tier
+  end
+
+  test "returns an error result when the adapter raises" do
+    raising_adapter = Object.new
+    def raising_adapter.messages(**) = raise "network error"
+
+    result = AiTriageService.new(@cf, adapter: raising_adapter).call
 
     assert_nil result.proposal
     assert_match "network error", result.error
   end
 
   test "handles malformed JSON gracefully" do
-    mock   = build_mock_client("not json at all")
-    result = AiTriageService.new(@cf, client: mock).call
+    fake   = build_fake_adapter("not json at all")
+    result = AiTriageService.new(@cf, adapter: fake).call
 
     assert_nil result.error
     assert_equal "low", result.proposal.confidence
+  end
+
+  test "strips markdown fences from JSON response" do
+    with_fences = "```json\n#{stub_response_json}\n```"
+    fake   = build_fake_adapter(with_fences)
+    result = AiTriageService.new(@cf, adapter: fake).call
+
+    assert_nil result.error
+    assert_equal "Tara Sadhana", result.proposal.proposed_title_phonetic
   end
 end
