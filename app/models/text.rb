@@ -2,7 +2,17 @@ class Text < ApplicationRecord
   has_many :translations, dependent: :destroy
   has_many_attached :files
 
-  validates :title_tibetan, presence: true
+  validate :at_least_one_title
+
+  private
+
+  def at_least_one_title
+    if title_tibetan.blank? && title_phonetics.blank? && title_wylie.blank?
+      errors.add(:base, "Au moins un titre (tibétain, phonétique ou Wylie) est requis")
+    end
+  end
+
+  public
   has_and_belongs_to_many :authors
   has_and_belongs_to_many :deities
   has_and_belongs_to_many :schools

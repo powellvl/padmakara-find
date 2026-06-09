@@ -23,6 +23,33 @@ namespace :triage do
     puts "\n#{enqueued} jobs enqueués"
   end
 
+  desc "Auto-accept all pending_review proposals (is_prayer_text=true → accepted, false → rejected)"
+  task auto_accept: :environment do
+    proposals = AiTriageProposal.pending_review
+    total     = proposals.count
+    puts "#{total} proposals à traiter..."
+
+    accepted = 0
+    rejected = 0
+    errors   = 0
+
+    proposals.find_each do |proposal|
+      result = AutoTriageService.new(proposal).call
+      if result.error
+        errors += 1
+        puts "  ERREUR ##{proposal.id}: #{result.error}"
+      elsif result.skipped
+        rejected += 1
+      else
+        accepted += 1
+        print "." if (accepted % 50).zero?
+      end
+    end
+
+    puts "\nAcceptés: #{accepted} | Rejetés: #{rejected} | Erreurs: #{errors}"
+    puts "Texts créés: #{Text.count} | Versions: #{Version.count}"
+  end
+
   desc "Show triage queue status"
   task status: :environment do
     puts "--- Extraction ---"
