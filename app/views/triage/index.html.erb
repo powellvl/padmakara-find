@@ -6,7 +6,8 @@
 
   <% if @awaiting_triage > 0 %>
     <p class="mb-4 text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded px-4 py-2">
-      <%= @awaiting_triage %> fichier(s) extrait(s) pas encore soumis à l'IA — seront traités automatiquement après le prochain scan.
+      <%= @awaiting_triage %> fichier(s) extrait(s) pas encore analysés par l'IA.
+      Lancez <code class="font-mono bg-amber-100 px-1 rounded">bin/rails triage:enqueue_pending</code> pour les soumettre.
     </p>
   <% end %>
 

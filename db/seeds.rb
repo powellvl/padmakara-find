@@ -8,6 +8,10 @@
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
 
+%w[French English Tibetan Sanskrit Mixed Unknown].each do |name|
+  Language.find_or_create_by!(name: name)
+end
+
 %w[Kagyü Nyingma Gelug Sakya].each do |name|
   School.find_or_create_by!(name: name)
 end
