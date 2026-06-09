@@ -79,6 +79,52 @@ class TextExtractorTest < ActiveSupport::TestCase
     assert_equal :unsupported_format, result.status
   end
 
+  # ── PlainText extraction ──────────────────────────────────────────────────
+
+  test "extracts text from a UTF-8 plain text file" do
+    Tempfile.create([ "utf8", ".txt" ]) do |f|
+      f.write("Om Mani Padme Hum\n")
+      f.flush
+      result = TextExtractor.new(f.path, "text/plain").call
+      assert_equal :extracted, result.status
+      assert_includes result.text, "Om Mani Padme Hum"
+    end
+  end
+
+  test "extracts text from a Latin-1 encoded txt without raising" do
+    result = TextExtractor.new(FIXTURES_DIR.join("sample_latin1.txt").to_s, "text/plain").call
+    assert_equal :extracted, result.status
+    assert_equal Encoding::UTF_8, result.text.encoding
+    assert_includes result.text, "Padmakara"
+  end
+
+  # ── RTF extraction ────────────────────────────────────────────────────────
+
+  test "extracts text from a valid RTF file" do
+    result = TextExtractor.new(FIXTURES_DIR.join("sample.rtf").to_s, "application/rtf").call
+    assert_equal :extracted, result.status
+    assert_includes result.text, "Hommage"
+    assert_includes result.text, "Om Mani Padme Hum"
+  end
+
+  # ── Doc (Word 97) extraction ──────────────────────────────────────────────
+
+  test "falls back to RTF extractor when .doc file is actually RTF" do
+    result = TextExtractor.new(FIXTURES_DIR.join("sample_rtf_as_doc.doc").to_s, "application/msword").call
+    assert_equal :extracted, result.status
+    assert_includes result.text, "Guru Rinpoche"
+  end
+
+  test "returns extraction_failed for a corrupt .doc file" do
+    Tempfile.create([ "corrupt", ".doc" ]) do |f|
+      f.write("not a word document and not rtf either")
+      f.flush
+      result = TextExtractor.new(f.path, "application/msword").call
+      assert_equal :extraction_failed, result.status
+      assert_not_nil result.error
+    end
+  end
+
   # ── Dispatcher ────────────────────────────────────────────────────────────
 
   test "unknown content_type returns unsupported_format without raising" do
