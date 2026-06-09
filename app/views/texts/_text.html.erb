@@ -2,7 +2,8 @@
 
   <%# ── Couverture ──────────────────────────────────────────────────── %>
   <div class="book-cover">
-    <% if text.preferred_cover.present? rescue false %>
+    <% cover_present = begin; text.preferred_cover.present?; rescue StandardError; false; end %>
+    <% if cover_present %>
       <%= display_text_cover(text, class: "w-full h-full object-cover") %>
     <% else %>
       <div class="book-cover-placeholder">

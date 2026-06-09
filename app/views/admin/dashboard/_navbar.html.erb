@@ -11,7 +11,7 @@
 %>
 
 
-<div class="w-64 hidden md:block bg-white shadow-md min-h-screen h-full">
+<div class="w-64 hidden md:block bg-parchment shadow-md min-h-screen h-full">
       <div class="sticky top-0 pt-3">
         <div class="text-center mb-4">
         </div>
@@ -24,7 +24,7 @@
         <ul class="space-y-2 px-3">
           <% menu_items.each do |menu_item| %>
             <li>
-              <%= link_to menu_item[:name], menu_item[:path], class: "flex items-center px-3 py-2 rounded-md mt-2 #{current_page?(menu_item[:path]) ? 'bg-gray-700 text-white' : 'text-gray-800 hover:bg-gray-600 hover:text-white'}" %>
+              <%= link_to menu_item[:name], menu_item[:path], class: "flex items-center px-3 py-2 rounded-md mt-2 #{current_page?(menu_item[:path]) ? 'bg-saffron text-white' : 'text-gray-800 hover:bg-zinc-700 hover:text-white'}" %>
             </li>
           <% end %>
         </ul>
