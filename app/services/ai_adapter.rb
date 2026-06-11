@@ -20,6 +20,12 @@ module AiAdapter
   # Mimics Anthropic SDK's content block so callers use a uniform interface.
   ContentBlock = Data.define(:text)
 
+  # Uniform image part for multimodal messages. Message content is either a
+  # plain String or an Array mixing Strings and ImagePart instances; each
+  # adapter converts to its provider's wire format.
+  #   ImagePart.new(media_type: "image/png", data: Base64.strict_encode64(bytes))
+  ImagePart = Data.define(:media_type, :data)
+
   # Uniform response returned by all adapters.
   class Response
     attr_reader :model_used

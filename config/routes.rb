@@ -17,6 +17,9 @@ Rails.application.routes.draw do
     end
   end
 
+  # Pont NAS : streaming des fichiers indexés (lecture seule)
+  get "files/:id", to: "nas_files#show", as: :nas_file
+
   get "/search", to: "search#index"
   namespace :admin do
     resources :users

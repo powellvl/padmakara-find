@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_06_06_000002) do
+ActiveRecord::Schema[8.0].define(version: 2026_06_11_000001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -96,6 +96,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_06_06_000002) do
     t.integer "extraction_status", default: 0, null: false
     t.tsvector "content_tsvector"
     t.bigint "version_id"
+    t.jsonb "ai_file_card"
+    t.datetime "ai_file_card_at"
     t.index ["content_tsvector"], name: "index_catalogued_files_on_content_tsvector", using: :gin
     t.index ["content_type"], name: "index_catalogued_files_on_content_type"
     t.index ["extracted_text"], name: "index_catalogued_files_on_extracted_text_trgm", opclass: :gin_trgm_ops, using: :gin
@@ -135,6 +137,18 @@ ActiveRecord::Schema[8.0].define(version: 2026_06_06_000002) do
     t.index ["last_seen_at"], name: "index_file_locations_on_last_seen_at"
     t.index ["missing_since"], name: "index_file_locations_on_missing_since"
     t.index ["path"], name: "index_file_locations_on_path", unique: true
+  end
+
+  create_table "folder_triage_proposals", force: :cascade do |t|
+    t.string "folder_path", null: false
+    t.integer "status", default: 0, null: false
+    t.jsonb "payload"
+    t.string "model_used"
+    t.text "error"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["folder_path"], name: "index_folder_triage_proposals_on_folder_path"
+    t.index ["status"], name: "index_folder_triage_proposals_on_status"
   end
 
   create_table "languages", force: :cascade do |t|
@@ -203,6 +217,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_06_06_000002) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "title_wylie"
+    t.string "title_tibetan_normalized"
+    t.index ["title_tibetan_normalized"], name: "index_texts_on_title_tibetan_normalized"
   end
 
   create_table "translations", force: :cascade do |t|

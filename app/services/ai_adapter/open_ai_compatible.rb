@@ -9,17 +9,18 @@ module AiAdapter
       "mistral" => {
         base_url: "https://api.mistral.ai",
         env_key:  "MISTRAL_API_KEY",
-        models:   { fast: "mistral-small-latest", strong: "mistral-large-latest" }
+        models:   { fast: "mistral-small-latest", strong: "mistral-large-latest", vision: "mistral-small-latest" }
       },
       "openai" => {
         base_url: "https://api.openai.com",
         env_key:  "OPENAI_API_KEY",
-        models:   { fast: "gpt-4o-mini", strong: "gpt-4o" }
+        models:   { fast: "gpt-4o-mini", strong: "gpt-4o", vision: "gpt-4o-mini" }
       },
       "groq" => {
         base_url: "https://api.groq.com/openai",
         env_key:  "GROQ_API_KEY",
-        models:   { fast: "llama-3.1-8b-instant", strong: "llama-3.3-70b-versatile" }
+        models:   { fast: "llama-3.1-8b-instant", strong: "llama-3.3-70b-versatile",
+                    vision: "meta-llama/llama-4-scout-17b-16e-instruct" }
       }
     }.freeze
 
@@ -30,7 +31,8 @@ module AiAdapter
       api_key       = ENV.fetch(config[:env_key])
 
       # Merge system prompt as first message (OpenAI convention)
-      oai_messages = [ { role: "system", content: system }, *messages ]
+      oai_messages = [ { role: "system", content: system },
+                       *messages.map { |m| { role: m[:role], content: convert_content(m[:content]) } } ]
       body = JSON.generate(model: model, max_tokens: max_tokens, messages: oai_messages)
 
       text = post_completion(config[:base_url], api_key, body)
@@ -39,10 +41,26 @@ module AiAdapter
 
     private
 
+    def convert_content(content)
+      return content if content.is_a?(String)
+
+      content.map do |part|
+        case part
+        when String
+          { type: "text", text: part }
+        when ImagePart
+          { type: "image_url", image_url: { url: "data:#{part.media_type};base64,#{part.data}" } }
+        else
+          raise ArgumentError, "Unsupported content part: #{part.class}"
+        end
+      end
+    end
+
     def post_completion(base_url, api_key, body)
       uri = URI("#{base_url}/v1/chat/completions")
 
-      Net::HTTP.start(uri.host, uri.port, use_ssl: true) do |http|
+      # Vision payloads (base64 images) can take well over the 60s default.
+      Net::HTTP.start(uri.host, uri.port, use_ssl: true, read_timeout: 180, write_timeout: 180) do |http|
         req = Net::HTTP::Post.new(uri)
         req["Content-Type"]  = "application/json"
         req["Authorization"] = "Bearer #{api_key}"

@@ -12,6 +12,45 @@
     <%= version.status.humanize %>
   </div>
 
+  <%# ── Fichiers NAS liés (catalogued_files) ─────────────────────────── %>
+  <% if version.catalogued_files.any? %>
+    <div class="mt-8">
+      <div class="grid gap-4">
+        <% version.catalogued_files.each do |cf| %>
+          <% location = cf.active_locations.first %>
+          <div class="flex width-full items-center gap-1">
+            <%= link_to nas_file_path(cf), target: "_blank", class: "group flex-1 flex items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-all duration-200" do %>
+              <div class="ml-4 flex-1">
+                <p class="text-sm font-medium text-gray-900 group-hover:text-blue-600">
+                  <%= location&.filename || "(emplacement manquant)" %>
+                </p>
+                <p class="text-xs text-gray-500 mb-1">
+                  <%= number_to_human_size(cf.byte_size) %> — NAS
+                </p>
+                <% if location %>
+                  <p class="text-xs text-gray-400 font-mono truncate" title="<%= location.path %>">
+                    <%= location.path.delete_prefix(NasSource.root.to_s) %>
+                  </p>
+                <% end %>
+              </div>
+              <div class="ml-auto flex items-center gap-3">
+                <svg class="w-5 h-5 text-gray-400 group-hover:text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+              </div>
+            <% end %>
+            <%= link_to nas_file_path(cf, download: 1), class: "p-3 text-gray-400 hover:text-blue-500", title: "Télécharger" do %>
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
   <% if version.files.any? %>
     <div class="mt-8">
       <div class="grid gap-4">
@@ -45,7 +84,7 @@
         <% end %>
       </div>
     </div>
-  <% else %>
+  <% elsif version.catalogued_files.none? %>
     <p class="mt-4 text-sm text-gray-500 italic">No files attached</p>
   <% end %>
 </div>
