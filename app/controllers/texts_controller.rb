@@ -29,6 +29,17 @@ class TextsController < ApplicationController
     @schools = School.all.order(:name)
     @deities = Deity.all.order(:name_english)
     @tags = Tag.all.order(:name)
+
+    # Pagination légère (sans dépendance) — le catalogue complet dépassera
+    # vite la centaine de textes.
+    @per_page    = 60
+    @page        = [ params[:page].to_i, 1 ].max
+    @total_count = @texts.distinct.count
+    @total_pages = (@total_count.to_f / @per_page).ceil
+    @texts = @texts.order(:created_at)
+                   .limit(@per_page)
+                   .offset((@page - 1) * @per_page)
+                   .includes(translations: { versions: :catalogued_files })
   end
 
   # GET /texts/new

@@ -14,6 +14,20 @@ require "json"
 class FolderTriageService
   MAX_EXISTING_TEXTS = 150
 
+  # Extensions that can never be a catalog version: fonts, archives, layout
+  # sidecars, thumbnails, OS junk. Excluded from the AI call and auto-listed
+  # as unassigned, so they never get sent for analysis or become versions.
+  NOISE_EXTENSIONS = %w[
+    .ttf .otf .pfb .pfm .afm .ttc
+    .zip .rar .7z .gz .sit
+    .db .ds_store .tmp .lnk
+    .sty .dct .cap .cif .chp .cch .wpm .wa0 .p .pub .qxd
+  ].freeze
+
+  # Filenames that look like imposition/printing spreads or single extracted
+  # pages of a larger document — these are fragments, not standalone texts.
+  IMPOSITION_PATTERN = /(?:\b\d{1,2}[_-]\d{1,2}\b|\bp\.?\s?\d{1,3}\b|\bpage\s?\d+\b)/i
+
   Result = Data.define(:proposal, :error)
 
   # folder_path: absolute path of the folder; files: CataloguedFiles whose
@@ -25,6 +39,19 @@ class FolderTriageService
   end
 
   def call
+    @noise, @analysable = @files.partition { |cf| noise?(cf) }
+
+    # A folder of pure noise (fonts, archives) yields an empty proposal — no
+    # AI call needed.
+    if @analysable.empty?
+      proposal = FolderTriageProposal.create!(
+        folder_path: relative_folder, status: :proposed,
+        payload: { "groups" => [], "unassigned_file_ids" => @noise.map(&:id),
+                   "notes" => "Aucun fichier analysable (bruit uniquement)." }
+      )
+      return Result.new(proposal: proposal, error: nil)
+    end
+
     response = adapter.messages(
       model_tier: :fast,
       max_tokens: 4096,
@@ -34,6 +61,7 @@ class FolderTriageService
 
     raw_text = response.content.first.text
     payload  = parse_response(raw_text)
+    payload  = append_noise(payload) if payload
 
     proposal = FolderTriageProposal.create!(
       folder_path: relative_folder,
@@ -52,6 +80,20 @@ class FolderTriageService
 
   def adapter
     @adapter ||= AiAdapter.build
+  end
+
+  def noise?(catalogued_file)
+    ext = File.extname(catalogued_file.active_locations.first&.filename.to_s).downcase
+    NOISE_EXTENSIONS.include?(ext)
+  end
+
+  # Noise files were never shown to the AI; record them as unassigned so the
+  # review screen still accounts for every file in the folder.
+  def append_noise(payload)
+    return payload if @noise.empty?
+
+    payload["unassigned_file_ids"] = (Array(payload["unassigned_file_ids"]) + @noise.map(&:id)).uniq
+    payload
   end
 
   def relative_folder
@@ -78,7 +120,11 @@ class FolderTriageService
       "Archives" suggest working or obsolete material):
       #{relative_folder}
 
-      Files in this folder (id, filename, and the AI analysis card of each file):
+      Files in this folder (id, filename, deterministic hints, and the AI analysis card).
+      Hints: "stem" = filename without extension (files sharing a stem, e.g. X.docx and
+      X.pdf, are the SAME version exported twice — keep them together as one version);
+      "imposition" = true means the filename looks like a printing spread or an extracted
+      page (e.g. "1_8", "p.31"), which is a fragment, not a standalone text.
       #{files_block}
 
       Existing texts already in the catalog (match against these before inventing a new text;
@@ -95,8 +141,12 @@ class FolderTriageService
       - role per file: "version" (a usable rendition of the text), "working" (draft/work
         file of the same text), "fragment" (isolated pages of a larger document),
         "noise" (fonts, thumbnails, admin files, images without text).
-      - Do NOT invent Tibetan titles. Only fill title_tibetan when a card shows it or you
-        are confident from the well-known text identity.
+      - NEVER invent or transliterate a Tibetan title. Fill title_tibetan ONLY by copying
+        Tibetan script that actually appears in a file's card. If no card shows Tibetan
+        script, leave title_tibetan null — a wrong Tibetan title is worse than none.
+      - Files sharing a "stem" hint are one version (the same document in two formats):
+        put them in the same group with the SAME version_label.
+      - Files with "imposition": true are fragments unless a card proves otherwise.
       - version_label: short human label distinguishing this file (e.g. "A4", "livret v3.09",
         "scan"), else null.
 
@@ -122,9 +172,16 @@ class FolderTriageService
   end
 
   def files_block
-    @files.map { |cf|
+    @analysable.map { |cf|
+      filename = cf.active_locations.first&.filename.to_s
       card = (cf.ai_file_card || {}).except("model_used", "raw", "notes").compact
-      { id: cf.id, filename: cf.active_locations.first&.filename, card: card }.to_json
+      {
+        id:         cf.id,
+        filename:   filename,
+        stem:       File.basename(filename, ".*"),
+        imposition: filename.match?(IMPOSITION_PATTERN),
+        card:       card
+      }.to_json
     }.join("\n")
   end
 

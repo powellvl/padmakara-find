@@ -101,6 +101,20 @@
         <% end %>
       <% end %>
     </div>
+
+    <% if @total_pages.to_i > 1 %>
+      <nav class="flex items-center justify-center gap-4 mt-8 text-sm">
+        <% if @page > 1 %>
+          <%= link_to "← Précédent", request.query_parameters.merge(page: @page - 1),
+                class: "px-3 py-1.5 rounded border border-parchment-dark text-stone-600 hover:bg-parchment-hover" %>
+        <% end %>
+        <span class="text-stone-500">Page <%= @page %> / <%= @total_pages %> · <%= @total_count %> textes</span>
+        <% if @page < @total_pages %>
+          <%= link_to "Suivant →", request.query_parameters.merge(page: @page + 1),
+                class: "px-3 py-1.5 rounded border border-parchment-dark text-stone-600 hover:bg-parchment-hover" %>
+        <% end %>
+      </nav>
+    <% end %>
   <% else %>
     <div class="text-center py-20 text-stone-400">
       <svg class="w-12 h-12 mx-auto mb-4 text-parchment-dark" fill="none" viewBox="0 0 24 24" stroke="currentColor">

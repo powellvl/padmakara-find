@@ -111,6 +111,34 @@ Limites restantes : paires sans image (docx seuls) → verdict « unknown », la
 review humaine ; les fragments d'imposition (ENG 1_8, 2_7…) restent des versions
 distinctes au lieu de fichiers d'une même version.
 
+## Addendum 2026-06-19 — Durcissements suite aux retours
+
+Suite à la review utilisateur du catalogue (texte Tara introuvable, doublons inter-langues) :
+
+1. **Review humaine réintroduite** (`/triage/folders`) : le pipeline crée désormais des
+   propositions en statut `proposed` à valider (bouton Valider/Rejeter, fichiers + liens
+   NAS visibles). L'auto-application n'est plus le défaut (`AUTO_APPLY=1` pour l'ancien
+   comportement). Flux validé par test d'intégration.
+2. **Validation mécanique des titres** (`TibetanText.sanitize_titles`) : un titre tibétain
+   doit être à ≥90 % du script tibétain, un Wylie doit être ASCII — sinon reclassé ou
+   abandonné. Empêche la phonétique déguisée d'empoisonner la clé de jonction. Intégré
+   dans cartes/triage/consolidation/fusion. La fusion préfère désormais le titre plausible
+   des deux côtés (corrige le « pire titre » hérité par Tara).
+3. **Garde-fous déterministes** (avant tout appel IA) : extensions bruit
+   (.ttf/.zip/.db/.sty/.qxd…) exclues et auto-listées comme non assignées ; radical de nom
+   commun (X.docx+X.pdf) signalé comme même version ; motif d'imposition (1_8, p.31)
+   signalé comme fragment. Prompt renforcé : interdiction stricte d'inventer un titre
+   tibétain.
+4. **Pagination `/texts`** (60/page, sans dépendance) — le catalogue complet dépassera vite
+   l'affichage d'un seul écran.
+
+Couverture de tests ajoutée : TibetanText (10), FolderTriageService bruit/imposition (3),
+FolderTriageController review+accept+reject (5), TextsController pagination (2). Suite
+services verte (48 runs).
+
+Cas Tara : désormais 1 texte, 3 langues (EN 10 versions, FR 4, TIB 2), titre tibétain
+vérifié à la main sur la couverture (lecture vision directe, sans appel API).
+
 ## Coût/temps observés
 ~115 appels (91 cartes + 24 dossiers) en ~45 min (séquentiel + sleeps), coût négligeable
 sur mistral-small. Extrapolation 6 000 fichiers : ~8–10 h en séquentiel, parallélisable.
