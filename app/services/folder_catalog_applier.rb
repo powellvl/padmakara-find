@@ -75,6 +75,17 @@ class FolderCatalogApplier
   end
 
   def resolve_text(group)
+    # Reclassify AI titles before using them as keys: fake Tibetan/Wylie would
+    # otherwise poison the cross-language join.
+    titles = TibetanText.sanitize_titles(
+      group["title_tibetan"], group["title_wylie"], group["title_translated"]
+    )
+    group = group.merge(
+      "title_tibetan"    => titles[:tibetan],
+      "title_wylie"      => titles[:wylie],
+      "title_translated" => titles[:phonetic]
+    )
+
     tib_key   = TibetanText.normalize(group["title_tibetan"])
     wylie_key = squash(group["title_wylie"])
     trans_key = squash(group["title_translated"])

@@ -6,6 +6,16 @@ Rails.application.routes.draw do
   get  "inventory",        to: "inventory#index",        as: :inventory
   post "inventory/scan",   to: "inventory#trigger_scan", as: :trigger_scan_inventory
 
+  # Triage par dossier — review humaine des propositions (avant resources :triage,
+  # sinon /triage/folders matcherait triage#show id=folders)
+  get  "triage/folders", to: "folder_triage#index", as: :folder_triage_index
+  resources :folder_triage, only: %i[show], path: "triage/folders" do
+    member do
+      post :accept
+      post :reject
+    end
+  end
+
   # Phase 03 — AI-assisted triage
   get  "triage",            to: "triage#index",  as: :triage_index
   resources :triage, only: %i[show], controller: "triage" do

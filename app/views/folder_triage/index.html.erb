@@ -1,0 +1,42 @@
+<%= render "shared/admin_header",
+      title: "Triage par dossier",
+      subtitle: "#{@stats['proposed'].to_i} à relire · #{@stats['applied'].to_i} appliquées · #{@stats['rejected'].to_i} rejetées · #{@stats['failed'].to_i} en échec" %>
+
+<div class="max-w-5xl mx-auto px-4 pb-8">
+  <% if @proposals.any? %>
+    <div class="space-y-2">
+      <% @proposals.each do |proposal| %>
+        <% files_count = proposal.groups.sum { |g| Array(g["files"]).size } %>
+        <div class="flex items-center justify-between rounded-lg border border-gray-200 bg-white px-4 py-3 shadow-sm hover:border-indigo-200 transition">
+          <div class="min-w-0 flex-1">
+            <p class="truncate text-sm font-semibold text-gray-900"><%= proposal.folder_path %></p>
+            <div class="mt-1.5 flex flex-wrap gap-2">
+              <span class="inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-600">
+                <%= pluralize(proposal.groups.size, "groupe") %>
+              </span>
+              <span class="inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-600">
+                <%= pluralize(files_count, "fichier") %>
+              </span>
+              <% proposal.groups.first(3).each do |g| %>
+                <span class="text-xs text-gray-500 italic truncate max-w-48">
+                  <%= g["title_translated"] || g["title_wylie"] || g["title_tibetan"] %>
+                </span>
+              <% end %>
+            </div>
+          </div>
+          <div class="ml-4 shrink-0">
+            <%= link_to "Relire →", folder_triage_path(proposal),
+                  class: "rounded bg-indigo-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-indigo-700" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="text-center py-16 text-gray-400">
+      <p class="text-lg font-medium mb-1">Aucune proposition à relire</p>
+      <p class="text-sm">
+        Lancez <code class="font-mono bg-gray-100 px-1 rounded">bin/rails triage:folder_experiment</code> pour analyser des dossiers.
+      </p>
+    </div>
+  <% end %>
+</div>

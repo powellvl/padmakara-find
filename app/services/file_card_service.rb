@@ -35,6 +35,7 @@ class FileCardService
     )
 
     card = parse_response(response.content.first.text)
+    sanitize_card_titles!(card)
     card["model_used"] = response.model_used
     @cf.update!(ai_file_card: card, ai_file_card_at: Time.current)
     Result.new(card: card, error: nil)
@@ -127,6 +128,18 @@ class FileCardService
 
   def relative_path(location)
     location.path.delete_prefix(NasSource.root.to_s).delete_prefix("/")
+  end
+
+  # Reclassifies implausible titles in place (fake Tibetan dropped or moved to
+  # Wylie, fake Wylie demoted to translated title) so bad keys never reach
+  # the folder triage stage.
+  def sanitize_card_titles!(card)
+    titles = TibetanText.sanitize_titles(
+      card["title_tibetan"], card["title_wylie"], card["title_translated"]
+    )
+    card["title_tibetan"]    = titles[:tibetan]
+    card["title_wylie"]      = titles[:wylie]
+    card["title_translated"] = titles[:phonetic]
   end
 
   def parse_response(raw_text)

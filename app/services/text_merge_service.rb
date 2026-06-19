@@ -19,10 +19,16 @@ class TextMergeService
     ActiveRecord::Base.transaction do
       @dup.translations.each { |tr| move_translation(tr) }
 
-      @keep.title_tibetan            ||= @dup.title_tibetan
-      @keep.title_tibetan_normalized ||= @dup.title_tibetan_normalized
-      @keep.title_wylie              ||= @dup.title_wylie
-      @keep.title_phonetics          ||= @dup.title_phonetics
+      # Prefer plausible titles wherever they live: the "keep" side can carry a
+      # hallucinated Tibetan/Wylie while the duplicate has the real one.
+      if !TibetanText.plausible_tibetan?(@keep.title_tibetan) && TibetanText.plausible_tibetan?(@dup.title_tibetan)
+        @keep.title_tibetan            = @dup.title_tibetan
+        @keep.title_tibetan_normalized = @dup.title_tibetan_normalized
+      end
+      if !TibetanText.plausible_wylie?(@keep.title_wylie) && TibetanText.plausible_wylie?(@dup.title_wylie)
+        @keep.title_wylie = @dup.title_wylie
+      end
+      @keep.title_phonetics ||= @dup.title_phonetics
       @keep.author_ids |= @dup.author_ids
       @keep.deity_ids  |= @dup.deity_ids
       @keep.school_ids |= @dup.school_ids

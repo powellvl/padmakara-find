@@ -153,13 +153,13 @@ class CatalogConsolidationService
   end
 
   def apply_canonical_titles(keep, set)
-    tib = set["title_tibetan"].presence
-    # Guard against Wylie-in-Tibetan-field hallucinations.
-    if tib && tib.match?(/\p{Tibetan}/)
-      keep.title_tibetan            = tib
-      keep.title_tibetan_normalized = TibetanText.normalize(tib)
+    titles = TibetanText.sanitize_titles(set["title_tibetan"], set["title_wylie"])
+
+    if titles[:tibetan]
+      keep.title_tibetan            = titles[:tibetan]
+      keep.title_tibetan_normalized = TibetanText.normalize(titles[:tibetan])
     end
-    keep.title_wylie = set["title_wylie"].presence || keep.title_wylie
+    keep.title_wylie = titles[:wylie] if titles[:wylie]
     keep.save! if keep.changed?
   end
 

@@ -58,16 +58,26 @@ namespace :triage do
     # ── Phase B: folder-level triage + catalog application ────────────────────
     by_folder = files.group_by { |cf| File.dirname(cf.active_locations.first.path) }.sort
 
+    # Par défaut, les propositions sont laissées en attente de review humaine
+    # (/triage/folders). AUTO_APPLY=1 réapplique automatiquement (mode expérience).
+    auto_apply = ENV["AUTO_APPLY"].present?
+
     by_folder.each do |folder, folder_files|
       rel = folder.delete_prefix(NasSource.root.to_s).delete_prefix("/")
-      if FolderTriageProposal.applied.exists?(folder_path: rel)
-        puts "[folder] skip (already applied): #{rel}"
+      if FolderTriageProposal.where(status: [ :applied, :proposed ]).exists?(folder_path: rel)
+        puts "[folder] skip (déjà proposé/appliqué): #{rel}"
         next
       end
 
       result = with_rate_limit_retry { FolderTriageService.new(folder, folder_files).call }
       if result.error || result.proposal.failed?
         puts "[folder] FAIL #{rel}: #{result.error || result.proposal.error}"
+        next
+      end
+
+      unless auto_apply
+        puts "[folder] proposé (à relire): #{rel} — #{result.proposal.groups.size} groupes"
+        sleep 0.4
         next
       end
 
