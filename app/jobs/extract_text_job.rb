@@ -18,7 +18,8 @@ class ExtractTextJob < ApplicationJob
     when :extracted
       cf.update!(extracted_text: result.text, extraction_status: :extracted)
       cf.update_tsvector!
-      TriageFileJob.perform_later(cf.id) unless cf.triaged?
+      # Le triage est désormais déclenché par dossier (FolderIngestJob), plus
+      # par fichier. L'ancien TriageFileJob (1 texte par fichier) est déprécié.
     when :unsupported_format
       cf.update!(extraction_status: :unsupported_format)
     when :extraction_failed

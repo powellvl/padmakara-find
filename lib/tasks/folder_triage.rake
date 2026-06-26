@@ -94,6 +94,28 @@ namespace :triage do
          "triaged=#{CataloguedFile.triaged.count} proposals=#{FolderTriageProposal.group(:status).count}"
   end
 
+  desc "Enfile un FolderIngestJob par dossier contenant des fichiers extraits non triés. ENV: LIMIT (max dossiers)"
+  task enqueue_all_folders: :environment do
+    root = NasSource.root.to_s
+
+    # Dossier immédiat de chaque fichier extrait non trié → ensemble de dossiers uniques.
+    folders = CataloguedFile
+      .extracted.where(triage_state: :pending)
+      .joins(:file_locations).merge(FileLocation.active)
+      .pluck("file_locations.path")
+      .map { |p| File.dirname(p) }
+      .uniq
+
+    # On ne réenfile pas un dossier déjà proposé/appliqué.
+    done = FolderTriageProposal.where(status: [ :proposed, :applied ]).pluck(:folder_path).to_set
+    pending = folders.map { |abs| abs.delete_prefix(root).delete_prefix("/") }
+                     .reject { |rel| done.include?(rel) }
+    pending = pending.first(ENV["LIMIT"].to_i) if ENV["LIMIT"].present?
+
+    pending.each { |rel| FolderIngestJob.perform_later(rel) }
+    puts "[enqueue] #{pending.size} dossier(s) enfilé(s) (sur #{folders.size} au total, #{done.size} déjà traités)"
+  end
+
   desc "Cross-language consolidation: merge Texts that are the same prayer. ENV: DRY_RUN=1"
   task consolidate: :environment do
     result = CatalogConsolidationService.new(dry_run: ENV["DRY_RUN"].present?).call
