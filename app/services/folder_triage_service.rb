@@ -28,6 +28,12 @@ class FolderTriageService
   # pages of a larger document — these are fragments, not standalone texts.
   IMPOSITION_PATTERN = /(?:\b\d{1,2}[_-]\d{1,2}\b|\bp\.?\s?\d{1,3}\b|\bpage\s?\d+\b)/i
 
+  # Au-delà de ce nombre de fichiers analysables, un dossier est traité en
+  # plusieurs sous-lots : le JSON d'une seule réponse deviendrait trop gros
+  # (troncature). Les groupes des lots sont concaténés ; la passe de
+  # consolidation globale réunit ensuite ce qui aurait été séparé entre lots.
+  CHUNK_SIZE = 20
+
   Result = Data.define(:proposal, :error)
 
   # folder_path: absolute path of the folder; files: CataloguedFiles whose
@@ -52,23 +58,39 @@ class FolderTriageService
       return Result.new(proposal: proposal, error: nil)
     end
 
-    response = adapter.messages(
-      model_tier: :fast,
-      max_tokens: 4096,
-      system:     system_prompt,
-      messages:   [ { role: "user", content: user_prompt } ]
-    )
+    chunks = @analysable.each_slice(CHUNK_SIZE).to_a
+    groups = []
+    unassigned = []
+    model = nil
+    failures = 0
 
-    raw_text = response.content.first.text
-    payload  = parse_response(raw_text)
-    payload  = append_noise(payload) if payload
+    chunks.each do |chunk|
+      parsed, model = triage_chunk(chunk)
+      if parsed
+        groups.concat(Array(parsed["groups"]))
+        unassigned.concat(Array(parsed["unassigned_file_ids"]))
+      else
+        failures += 1
+      end
+    end
+
+    # Tous les lots ont échoué → proposition en échec (rien d'exploitable).
+    if failures == chunks.size
+      proposal = FolderTriageProposal.create!(
+        folder_path: relative_folder, status: :failed, model_used: model,
+        error: "Aucun lot exploitable (#{failures}/#{chunks.size} lots en échec de parsing)."
+      )
+      return Result.new(proposal: proposal, error: nil)
+    end
+
+    payload = {
+      "groups" => groups,
+      "unassigned_file_ids" => (unassigned + @noise.map(&:id)).uniq,
+      "notes" => chunk_note(chunks.size, failures)
+    }
 
     proposal = FolderTriageProposal.create!(
-      folder_path: relative_folder,
-      status:      payload ? :proposed : :failed,
-      payload:     payload,
-      model_used:  response.model_used,
-      error:       payload ? nil : "JSON parse error: #{raw_text.first(500)}"
+      folder_path: relative_folder, status: :proposed, payload: payload, model_used: model
     )
     Result.new(proposal: proposal, error: nil)
   rescue => e
@@ -82,18 +104,29 @@ class FolderTriageService
     @adapter ||= AiAdapter.build
   end
 
+  # One AI call for a subset of files. Returns [parsed_payload_or_nil, model].
+  def triage_chunk(chunk)
+    response = adapter.messages(
+      model_tier: :fast,
+      max_tokens: [ 1024 + chunk.size * 200, 8192 ].min,
+      system:     system_prompt,
+      messages:   [ { role: "user", content: user_prompt(chunk) } ]
+    )
+    [ parse_response(response.content.first.text), response.model_used ]
+  end
+
+  def chunk_note(chunk_count, failures)
+    return nil if chunk_count <= 1 && failures.zero?
+
+    parts = []
+    parts << "Dossier volumineux traité en #{chunk_count} lots." if chunk_count > 1
+    parts << "#{failures} lot(s) en échec de parsing — fichiers possiblement manquants." if failures.positive?
+    parts.join(" ")
+  end
+
   def noise?(catalogued_file)
     ext = File.extname(catalogued_file.active_locations.first&.filename.to_s).downcase
     NOISE_EXTENSIONS.include?(ext)
-  end
-
-  # Noise files were never shown to the AI; record them as unassigned so the
-  # review screen still accounts for every file in the folder.
-  def append_noise(payload)
-    return payload if @noise.empty?
-
-    payload["unassigned_file_ids"] = (Array(payload["unassigned_file_ids"]) + @noise.map(&:id)).uniq
-    payload
   end
 
   def relative_folder
@@ -112,7 +145,7 @@ class FolderTriageService
     PROMPT
   end
 
-  def user_prompt
+  def user_prompt(chunk)
     <<~PROMPT
       Analyse this folder from the archive and group its files into catalog entries.
 
@@ -125,7 +158,7 @@ class FolderTriageService
       X.pdf, are the SAME version exported twice — keep them together as one version);
       "imposition" = true means the filename looks like a printing spread or an extracted
       page (e.g. "1_8", "p.31"), which is a fragment, not a standalone text.
-      #{files_block}
+      #{files_block(chunk)}
 
       Existing texts already in the catalog (match against these before inventing a new text;
       the same text may already exist from another language's folder):
@@ -171,8 +204,8 @@ class FolderTriageService
     PROMPT
   end
 
-  def files_block
-    @analysable.map { |cf|
+  def files_block(chunk)
+    chunk.map { |cf|
       filename = cf.active_locations.first&.filename.to_s
       card = (cf.ai_file_card || {}).except("model_used", "raw", "notes").compact
       {
