@@ -14,6 +14,10 @@ Rails.application.routes.draw do
       post :accept
       post :reject
     end
+    collection do
+      # Aperçu (1re page) d'un fichier catalogué, pour la review visuelle
+      get "preview/:id", action: :preview, as: :preview
+    end
   end
 
   # Phase 03 — AI-assisted triage

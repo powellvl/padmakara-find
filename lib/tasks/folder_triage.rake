@@ -116,6 +116,37 @@ namespace :triage do
     puts "[enqueue] #{pending.size} dossier(s) enfilé(s) (sur #{folders.size} au total, #{done.size} déjà traités)"
   end
 
+  desc "Purge le catalogue et le régénère depuis les propositions déjà appliquées (aucun appel IA)"
+  task regenerate_catalog: :environment do
+    applied = FolderTriageProposal.applied.order(:created_at).to_a
+    puts "AVANT : #{Text.count} texts / #{Version.count} versions / #{Deity.count} déités"
+    puts "propositions à rejouer : #{applied.size}"
+
+    ActiveRecord::Base.transaction do
+      CataloguedFile.where.not(version_id: nil).update_all(version_id: nil)
+      CataloguedFile.where(triage_state: :triaged).update_all(triage_state: 0)
+      Version.delete_all
+      Translation.delete_all
+      ActiveRecord::Base.connection.execute(
+        "DELETE FROM authors_texts; DELETE FROM deities_texts; DELETE FROM schools_texts; DELETE FROM tags_texts"
+      )
+      Text.delete_all
+      Deity.where.missing(:texts).delete_all
+      Author.where.missing(:texts).delete_all
+      applied.each { |p| p.update_columns(status: FolderTriageProposal.statuses[:proposed]) }
+    end
+
+    ok = ko = 0
+    applied.each do |p|
+      res = FolderCatalogApplier.new(p.reload).call
+      res.error ? (ko += 1) : (ok += 1)
+      puts "  ÉCHEC #{p.folder_path}: #{res.error[0, 80]}" if res.error
+    end
+
+    puts "APRÈS : #{Text.count} texts / #{Translation.count} translations / #{Version.count} versions"
+    puts "réappliquées : #{ok} OK, #{ko} échecs — #{Deity.count} déités, #{Author.count} auteurs"
+  end
+
   desc "Cross-language consolidation: merge Texts that are the same prayer. ENV: DRY_RUN=1"
   task consolidate: :environment do
     result = CatalogConsolidationService.new(dry_run: ENV["DRY_RUN"].present?).call

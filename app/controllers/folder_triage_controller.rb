@@ -19,6 +19,19 @@ class FolderTriageController < ApplicationController
                                  .index_by(&:id)
   end
 
+  # Aperçu de la 1re page d'un PDF du NAS : c'est la PREUVE que le relecteur
+  # compare au titre proposé, sans avoir à lire le tibétain ni ouvrir le fichier.
+  def preview
+    cf = CataloguedFile.find(params[:id])
+    image = PdfPagePreview.new(cf).call
+
+    if image
+      send_data image, type: "image/jpeg", disposition: "inline"
+    else
+      head :not_found
+    end
+  end
+
   def accept
     result = FolderCatalogApplier.new(@proposal).call
 

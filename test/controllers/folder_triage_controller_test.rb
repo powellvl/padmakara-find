@@ -51,6 +51,11 @@ class FolderTriageControllerTest < ActionDispatch::IntegrationTest
     assert @proposal.reload.rejected?
   end
 
+  test "preview returns 404 when the file has no renderable PDF" do
+    get preview_folder_triage_index_path(id: @cf)
+    assert_response :not_found
+  end
+
   test "non-admin is redirected" do
     sign_in(create(:user))
     get folder_triage_index_path
