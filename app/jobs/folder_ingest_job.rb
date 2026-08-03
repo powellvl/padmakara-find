@@ -7,12 +7,15 @@
 class FolderIngestJob < ApplicationJob
   queue_as :ingest
 
-  # Les erreurs de limite de débit du fournisseur IA sont rejouées avec backoff.
-  class RateLimitError < StandardError; end
+  # Erreurs transitoires du fournisseur IA (limite de débit OU coupure réseau) :
+  # rejouées avec backoff plutôt que de produire une proposition manquante.
+  class TransientError < StandardError; end
+  RateLimitError = TransientError # compat rétro
 
-  RATE_LIMIT_RE = /429|rate.?limit|too many requests/i
+  # Limite de débit (429) OU coupure/lenteur réseau (SSL, timeout, connexion).
+  TRANSIENT_RE = /429|rate.?limit|too many requests|ssl_read|unexpected eof|timed?\s?out|timeout|connection (reset|refused|closed)|econnreset|broken pipe|end of file|eoferror/i
 
-  retry_on RateLimitError, wait: :polynomially_longer, attempts: 6
+  retry_on TransientError, wait: :polynomially_longer, attempts: 6
   # Un dossier introuvable (déplacé entre le scan et le job) est ignoré.
   discard_on ActiveJob::DeserializationError
 
@@ -34,7 +37,7 @@ class FolderIngestJob < ApplicationJob
     build_cards(files)
 
     result = FolderTriageService.new(abs, files).call
-    raise RateLimitError, result.error if rate_limited?(result.error)
+    raise TransientError, result.error if transient?(result.error)
 
     if result.error
       Rails.logger.error("[FolderIngestJob] triage échoué #{folder_path}: #{result.error}")
@@ -63,11 +66,11 @@ class FolderIngestJob < ApplicationJob
       next if cf.ai_file_card_at.present?
 
       result = FileCardService.new(cf).call
-      raise RateLimitError, result.error if rate_limited?(result.error)
+      raise TransientError, result.error if transient?(result.error)
     end
   end
 
-  def rate_limited?(error)
-    error.to_s.match?(RATE_LIMIT_RE)
+  def transient?(error)
+    error.to_s.match?(TRANSIENT_RE)
   end
 end

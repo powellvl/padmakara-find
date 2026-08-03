@@ -45,6 +45,17 @@ class FolderIngestJobTest < ActiveJob::TestCase
     end
   end
 
+  test "a transient network error also re-enqueues the job for retry" do
+    file_in("prayers/Nago", carded: true)
+
+    net_error = Struct.new(:proposal, :error).new(nil, "SSL_read: unexpected eof while reading")
+    FolderTriageService.stub(:new, ->(*) { Struct.new(:call).new(net_error) }) do
+      assert_enqueued_with(job: FolderIngestJob) do
+        FolderIngestJob.perform_now("prayers/Nago")
+      end
+    end
+  end
+
   private
 
   def file_in(rel_folder, carded:)
