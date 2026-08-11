@@ -44,7 +44,9 @@ class FolderCatalogApplier
     "tibetan" => "Tibetan",
     "spanish" => "Spanish", "espanol" => "Spanish", "espagnol" => "Spanish",
     "portuguese" => "Portuguese", "portugues" => "Portuguese",
-    "finnish" => "Finnish",
+    "german" => "German", "allemand" => "German", "deutsch" => "German",
+    "italian" => "Italian", "italien" => "Italian",
+    "finnish" => "Finnish", "finlandais" => "Finnish",
     "sanskrit" => "Sanskrit"
   }.freeze
 

@@ -31,6 +31,19 @@ class PdfPageRenderer
     pages.map { |n| render_page(n) }
   end
 
+  # Couverture + premières pages intérieures + dernière page. Le titre tibétain
+  # est souvent sur une page de titre intérieure (p.2-3) alors que la couverture
+  # ne porte que le titre traduit — d'où la lecture en profondeur pour améliorer
+  # le taux d'extraction de la clé de regroupement.
+  def opening_and_last(open_count: 3)
+    n = page_count
+    return [ render_page(1) ] if n <= 1
+
+    numbers = (1..[ open_count, n ].min).to_a
+    numbers << n # dernière page (colophon : auteur, édition)
+    numbers.uniq.sort.map { |p| render_page(p) }
+  end
+
   private
 
   def render_page(number)

@@ -52,7 +52,9 @@ class FileCardService
 
   def build_content(location)
     if pdf?(location) && File.exist?(location.path)
-      images = PdfPageRenderer.new(location.path).cover_and_last
+      # Couverture + premières pages intérieures + dernière : le titre tibétain
+      # (clé de regroupement) est souvent sur une page de titre intérieure.
+      images = PdfPageRenderer.new(location.path).opening_and_last
       [ vision_prompt(location, images.size), *images ]
     elsif @cf.extracted_text.present?
       [ text_prompt(location, @cf.extracted_text.first(MAX_TEXT_CHARS)) ]
@@ -81,7 +83,7 @@ class FileCardService
         "is_prayer_text": true or false,
         "languages": ["languages of the CONTENT, from: Tibetan, French, English, Spanish, Portuguese, Finnish, Sanskrit, Other"],
         "has_tibetan_script": true or false,
-        "title_tibetan": "Tibetan title — ONLY by copying Tibetan (Uchen) script actually printed on the page. NEVER transliterate a phonetic/Latin title into Tibetan letters. If no Tibetan script is printed, use null",
+        "title_tibetan": "The WORK'S TITLE in Tibetan (Uchen) script — the heading/title-line as printed (a single short line, the way it appears on a title page or as the top heading), NOT the first line of the prayer body. Copy only script actually printed; never transliterate a Latin title into Tibetan. If no Tibetan title is printed, use null. One line, no line breaks",
         "title_wylie": "Wylie transliteration if printed or clearly derivable from printed Tibetan, else null",
         "title_translated": "translated or phonetic title (in the document's language) if identifiable, else null",
         "authors": ["masters/authors of the text, e.g. Dudjom Rinpoche, Patrul Rinpoche"],
@@ -94,11 +96,19 @@ class FileCardService
   end
 
   def vision_prompt(location, image_count)
-    pages = image_count > 1 ? "the cover (first page) and the last page" : "the only page"
+    pages = image_count > 1 ? "the opening pages (cover + first inner pages) and the last page" : "the only page"
     <<~PROMPT
-      Analyse this document from the archive. You are given #{pages} as images.
-      Titles, authors and edition info usually appear on these pages, often in both
-      Tibetan script and a translated form.
+      Analyse this document from the archive. You are given #{pages} as images,
+      in page order.
+
+      IMPORTANT for title_tibetan: the cover of a translated edition often shows only
+      the translated title, while the Tibetan (Uchen) title of the work appears on an
+      INNER title page (page 2 or 3) or near the colophon on the last page. Look across
+      ALL the images provided and copy the Tibetan title wherever it appears — do not
+      conclude "no Tibetan" just because the cover has none. Still: only copy Tibetan
+      script actually printed; never invent or transliterate.
+
+      Authors and edition/date info usually sit on the cover or the last page (colophon).
 
       File path: #{relative_path(location)}
 
@@ -134,8 +144,11 @@ class FileCardService
   # Wylie, fake Wylie demoted to translated title) so bad keys never reach
   # the folder triage stage.
   def sanitize_card_titles!(card)
+    # Le modèle rapporte parfois plusieurs lignes (en-tête + début du corps) :
+    # on ne garde que la première ligne comme titre.
+    first_line = ->(v) { v.is_a?(String) ? v.split(/[\r\n]+/).first&.strip : v }
     titles = TibetanText.sanitize_titles(
-      card["title_tibetan"], card["title_wylie"], card["title_translated"]
+      first_line.(card["title_tibetan"]), first_line.(card["title_wylie"]), first_line.(card["title_translated"])
     )
     card["title_tibetan"]    = titles[:tibetan]
     card["title_wylie"]      = titles[:wylie]
