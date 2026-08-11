@@ -50,6 +50,17 @@ module ApplicationHelper
     end
   end
 
+  # Pill de date de dernière modification d'un fichier (FileLocation#mtime),
+  # pour distinguer les versions datées sans se perdre. Rendu discret.
+  def file_date_pill(location, css: "")
+    return if location&.mtime.blank?
+
+    content_tag(:span,
+      "modifié le #{location.mtime.strftime('%d/%m/%Y')}",
+      class: "inline-flex items-center rounded-full bg-stone-100 text-stone-500 px-2 py-0.5 text-[11px] #{css}",
+      title: "Dernière modification : #{location.mtime.strftime('%d/%m/%Y %H:%M')}")
+  end
+
   def language_flag(language_name)
     case language_name.downcase
     when /tibetan/

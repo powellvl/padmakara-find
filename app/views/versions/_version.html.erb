@@ -24,8 +24,9 @@
                 <p class="text-sm font-medium text-gray-900 group-hover:text-blue-600">
                   <%= location&.filename || "(emplacement manquant)" %>
                 </p>
-                <p class="text-xs text-gray-500 mb-1">
-                  <%= number_to_human_size(cf.byte_size) %> — NAS
+                <p class="text-xs text-gray-500 mb-1 flex items-center gap-2">
+                  <span><%= number_to_human_size(cf.byte_size) %> — NAS</span>
+                  <%= file_date_pill(location) %>
                 </p>
                 <% if location %>
                   <p class="text-xs text-gray-400 font-mono truncate" title="<%= location.path %>">

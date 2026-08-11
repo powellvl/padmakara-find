@@ -79,9 +79,12 @@
             </span>
             <div class="min-w-0 flex-1">
               <p class="truncate text-sm text-gray-800"><%= cf&.active_locations&.first&.filename || "(fichier ##{f['id']} introuvable)" %></p>
-              <% if f["version_label"].present? %>
-                <p class="text-xs text-gray-400">Version : <%= f["version_label"] %></p>
-              <% end %>
+              <div class="flex items-center gap-2 mt-0.5">
+                <% if f["version_label"].present? %>
+                  <span class="text-xs text-gray-400">Version : <%= f["version_label"] %></span>
+                <% end %>
+                <%= file_date_pill(cf&.active_locations&.first) %>
+              </div>
             </div>
             <% if cf %>
               <%= link_to "Voir", nas_file_path(cf), target: "_blank",
