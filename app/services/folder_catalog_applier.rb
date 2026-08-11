@@ -78,6 +78,9 @@ class FolderCatalogApplier
       @proposal.update!(status: :applied)
     end
 
+    # Pertinence bibliothèque : masquer les textes 100 % archive/travail.
+    texts.uniq.each { |t| TextRelevance.refresh!(t) }
+
     Result.new(texts: texts.uniq, versions_count: versions_count, error: nil)
   rescue => e
     Rails.logger.error("[FolderCatalogApplier] failed for proposal #{@proposal.id}: #{e.message}")

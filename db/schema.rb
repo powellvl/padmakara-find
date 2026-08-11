@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_06_11_000001) do
+ActiveRecord::Schema[8.0].define(version: 2026_08_03_000001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -218,6 +218,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_06_11_000001) do
     t.datetime "updated_at", null: false
     t.string "title_wylie"
     t.string "title_tibetan_normalized"
+    t.boolean "archived", default: false, null: false
+    t.index ["archived"], name: "index_texts_on_archived"
     t.index ["title_tibetan_normalized"], name: "index_texts_on_title_tibetan_normalized"
   end
 

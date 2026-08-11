@@ -146,8 +146,10 @@ namespace :triage do
     # Les couvertures étaient attachées aux anciennes Versions détruites : on les
     # régénère depuis les PDF du NAS pour les nouvelles.
     covers = Version.find_each.count { |v| GenerateNasCover.new(v).call }
+    archived = TextRelevance.refresh_all!
     puts "APRÈS : #{Text.count} texts / #{Translation.count} translations / #{Version.count} versions"
-    puts "réappliquées : #{ok} OK, #{ko} échecs — #{Deity.count} déités, #{Author.count} auteurs — #{covers} couvertures"
+    puts "réappliquées : #{ok} OK, #{ko} échecs — #{Deity.count} déités, #{Author.count} auteurs"
+    puts "#{covers} couvertures — #{archived} textes d'archive masqués"
   end
 
   desc "Cross-language consolidation: merge Texts that are the same prayer. ENV: DRY_RUN=1"

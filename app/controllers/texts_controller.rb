@@ -3,7 +3,11 @@ class TextsController < ApplicationController
   before_action :set_text, only: %i[ edit update destroy ]
   # GET /texts or /texts.json
   def index
-    @texts = Text.all
+    # Par défaut, on masque les textes 100 % archive/travail (obsolètes).
+    # ?show_archived=1 les réaffiche.
+    @show_archived = params[:show_archived].present?
+    @archived_count = Text.where(archived: true).count
+    @texts = @show_archived ? Text.all : Text.where(archived: false)
 
     # Nettoyage et stockage des paramètres pour la vue
     @selected_school_ids = params[:school_ids]&.reject(&:blank?) || []
