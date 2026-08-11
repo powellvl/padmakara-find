@@ -143,8 +143,11 @@ namespace :triage do
       puts "  ÉCHEC #{p.folder_path}: #{res.error[0, 80]}" if res.error
     end
 
+    # Les couvertures étaient attachées aux anciennes Versions détruites : on les
+    # régénère depuis les PDF du NAS pour les nouvelles.
+    covers = Version.find_each.count { |v| GenerateNasCover.new(v).call }
     puts "APRÈS : #{Text.count} texts / #{Translation.count} translations / #{Version.count} versions"
-    puts "réappliquées : #{ok} OK, #{ko} échecs — #{Deity.count} déités, #{Author.count} auteurs"
+    puts "réappliquées : #{ok} OK, #{ko} échecs — #{Deity.count} déités, #{Author.count} auteurs — #{covers} couvertures"
   end
 
   desc "Cross-language consolidation: merge Texts that are the same prayer. ENV: DRY_RUN=1"

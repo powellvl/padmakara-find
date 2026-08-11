@@ -29,12 +29,18 @@
       </p>
     <% end %>
 
-    <h3 class="text-sm font-semibold text-stone-900 leading-snug line-clamp-2">
-      <%= text.title_phonetics.presence || text.preferred_version_title.presence || "—" %>
-    </h3>
-
-    <% if text.title_wylie.present? %>
-      <p class="text-xs text-stone-400 font-mono truncate"><%= text.title_wylie %></p>
+    <%# Titre principal : traduit/phonétique, sinon Wylie, sinon — si titre
+        tibétain déjà affiché ci-dessus — on n'ajoute rien plutôt qu'un tiret. %>
+    <% main_title = text.title_phonetics.presence || text.preferred_version_title.presence %>
+    <% if main_title.present? %>
+      <h3 class="text-sm font-semibold text-stone-900 leading-snug line-clamp-2"><%= main_title %></h3>
+      <% if text.title_wylie.present? %>
+        <p class="text-xs text-stone-400 font-mono truncate"><%= text.title_wylie %></p>
+      <% end %>
+    <% elsif text.title_wylie.present? %>
+      <h3 class="text-sm font-semibold text-stone-900 leading-snug line-clamp-2 font-mono"><%= text.title_wylie %></h3>
+    <% elsif text.title_tibetan.blank? %>
+      <h3 class="text-sm font-semibold text-stone-400 italic">Sans titre</h3>
     <% end %>
 
     <%# Badges %>
